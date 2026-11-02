@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Tap-to-flip 2026 midterm prediction maps: Senate, House, and NYC & Orange County races, with polls and share codes.">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Midterm Map 2026</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: profile bar, scope + race tabs, broadcast seat bar, layer switches, map (state tiles or borough cards), detail, ballot list, compare */
+:root{
+  --bg:#f2f3f6; --surface:#ffffff; --fg:#141821; --muted:#5b6372; --line:#d6dae3;
+  --dem:#1f5fd1; --rep:#d1392b; --ind:#7a4ec8; --oth:#7d8594; --toss:#cdd1da; --toss-fg:#2a2f3a;
+  --focus:#c88a10; --empty:#e6e8ee;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1117; --surface:#171b23; --fg:#e8ebf1; --muted:#98a1b0; --line:#2a303b;
+  --dem:#4a84ef; --rep:#ee5747; --ind:#9c78e5; --oth:#8a93a3; --toss:#3a404c; --toss-fg:#d7dbe3;
+  --focus:#e3a93a; --empty:#1d222b; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0e1117; --surface:#171b23; --fg:#e8ebf1; --muted:#98a1b0; --line:#2a303b;
+  --dem:#4a84ef; --rep:#ee5747; --ind:#9c78e5; --oth:#8a93a3; --toss:#3a404c; --toss-fg:#d7dbe3;
+  --focus:#e3a93a; --empty:#1d222b; color-scheme:dark }
+
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-direction:column;gap:4px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,8vw,44px);line-height:1;margin:0;letter-spacing:.01em;text-wrap:balance}
+a{color:inherit}
+button{font-family:inherit}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+/* profile bar */
+.who{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.who .lbl{flex:none}
+.who select,.who input{font:600 14px var(--body);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 8px;min-width:0}
+.who select{flex:1 1 180px}
+.who .rename{flex:1 1 140px}
+.who .lock{font-size:12px;color:var(--muted);width:100%}
+
+.scope{display:grid;grid-template-columns:1fr 1fr;gap:4px;border-bottom:1px solid var(--line)}
+.scope button{border:0;background:none;color:var(--muted);font:700 15px var(--body);padding:8px 4px 10px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+.scope button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--fg)}
+.tabs{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px;gap:4px}
+.tab{font-family:var(--display);font-size:clamp(15px,4vw,20px);font-weight:700;letter-spacing:.02em;border:0;border-radius:7px;padding:8px 2px;background:transparent;color:var(--muted);cursor:pointer;line-height:1.1}
+.tab[aria-selected="true"]{background:var(--fg);color:var(--bg)}
+
+.tally{display:flex;flex-direction:column;gap:8px}
+.nums{display:flex;justify-content:space-between;align-items:flex-end;font-variant-numeric:tabular-nums;gap:8px}
+.side{display:flex;flex-direction:column;min-width:0}
+.side.r{align-items:flex-end;text-align:right}
+.big{font-family:var(--display);font-weight:700;font-size:clamp(40px,12vw,58px);line-height:.9}
+.side.d .big{color:var(--dem)} .side.r .big{color:var(--rep)}
+.lbl{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.mid{text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;padding-bottom:4px}
+.mid .n{font-family:var(--display);font-weight:700;font-size:26px;line-height:1}
+.bar{position:relative;height:22px;border-radius:5px;overflow:hidden;display:flex;background:var(--toss)}
+.bar span{height:100%;transition:width .25s ease}
+.seg-d{background:var(--dem)} .seg-i{background:var(--ind)} .seg-t{background:var(--toss)} .seg-r{background:var(--rep)}
+.seg-hold{background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.28) 0 3px,transparent 3px 7px)}
+.marker{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--fg);left:50%;transform:translateX(-1px)}
+.bar-wrap{position:relative;padding-block:4px}
+.status{font-size:13px;color:var(--muted);text-align:center;min-height:1.4em}
+.status b{color:var(--fg)}
+
+.layers{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.layer{display:inline-flex;align-items:center;gap:7px;font:600 13px var(--body);border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:6px 12px 6px 8px;cursor:pointer}
+.layer .sw{width:28px;height:16px;border-radius:999px;background:var(--toss);position:relative;transition:background .2s}
+.layer .sw::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--surface);transition:transform .2s}
+.layer[aria-pressed="true"]{color:var(--fg);border-color:var(--fg)}
+.layer[aria-pressed="true"] .sw{background:var(--fg)}
+.layer[aria-pressed="true"] .sw::after{transform:translateX(12px);background:var(--bg)}
+
+/* national tile grid */
+.map{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:repeat(8,auto);gap:4px}
+.tile{aspect-ratio:1;max-width:100%;border:0;border-radius:4px;padding:0;cursor:pointer;position:relative;overflow:hidden;
+  font-family:var(--display);font-weight:700;font-size:clamp(11px,2.6vw,17px);letter-spacing:.02em;
+  display:flex;align-items:center;justify-content:center;color:var(--toss-fg);background:var(--toss);
+  transition:background .2s ease,transform .1s ease;-webkit-tap-highlight-color:transparent}
+.tile:active{transform:scale(.93)}
+.tile.D{background:var(--dem);color:#fff} .tile.R{background:var(--rep);color:#fff} .tile.I{background:var(--ind);color:#fff}
+.tile.mixed{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45)}
+.tile.none{background:var(--empty);color:var(--muted);cursor:default;box-shadow:inset 0 0 0 1px var(--line)}
+.tile.sel{box-shadow:0 0 0 3px var(--focus)}
+.pip{position:absolute;top:3px;right:3px;width:6px;height:6px;border-radius:50%;box-shadow:0 0 0 1.5px var(--surface)}
+.pip.D{background:var(--dem)} .pip.R{background:var(--rep)} .pip.I{background:var(--ind)}
+.tile.D .pip,.tile.R .pip,.tile.I .pip,.tile.mixed .pip,.lt.D .pip,.lt.R .pip,.lt.I .pip{box-shadow:0 0 0 1.5px rgba(255,255,255,.9)}
+.star{position:absolute;bottom:1px;left:0;right:0;font-size:8px;line-height:1;font-family:var(--body);font-weight:600;text-shadow:none}
+.mg{position:absolute;bottom:1px;left:0;right:0;font:700 8px var(--body);line-height:1.1;text-shadow:none;letter-spacing:0}
+.lt .mg{position:static;font-size:10px}
+.cnt{position:absolute;top:2px;left:3px;font-size:9px;font-family:var(--body);font-weight:600;opacity:.9}
+.strip{position:absolute;left:0;right:0;bottom:0;height:4px;display:flex}
+.strip span{height:100%}
+.strip .d{background:var(--dem)} .strip .r{background:var(--rep)} .strip .i{background:var(--ind)} .strip .v{background:var(--oth)}
+.tile.D .strip,.tile.R .strip,.tile.I .strip,.tile.mixed .strip{box-shadow:0 -1px 0 rgba(255,255,255,.8)}
+
+/* local region cards */
+.regions{display:grid;grid-template-columns:1fr 1fr;gap:10px;grid-template-areas:"orange bronx" "manhattan queens" "si brooklyn"}
+.regions.solo{grid-template-columns:1fr;grid-template-areas:"orange"}
+.regions.wide{grid-template-columns:1fr;grid-template-areas:"orange" "bronx" "manhattan" "queens" "brooklyn" "si"}
+.region{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.region h2{font-family:var(--display);font-weight:700;font-size:22px;margin:0;line-height:1}
+.region .cty{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.ltiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:6px}
+.regions.wide .ltiles{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.lt{position:relative;aspect-ratio:1;max-width:100%;border:0;border-radius:6px;cursor:pointer;padding:4px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;
+  background:var(--toss);color:var(--toss-fg);transition:background .2s ease,transform .1s ease;-webkit-tap-highlight-color:transparent}
+.lt:active{transform:scale(.95)}
+.lt.D{background:var(--dem);color:#fff} .lt.R{background:var(--rep);color:#fff} .lt.I{background:var(--ind);color:#fff}
+.lt.sel{box-shadow:0 0 0 3px var(--focus)}
+.lt .num{font-family:var(--display);font-weight:700;font-size:20px;line-height:1}
+.lt .tag{font-size:9px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;opacity:.9;line-height:1.1}
+.lt .who2{font-size:12px;font-weight:600;line-height:1.2}
+.regions.wide .lt{aspect-ratio:auto;min-height:62px;align-items:flex-start;text-align:left;padding:8px 10px}
+.fn{font-size:12px;color:var(--muted);line-height:1.4}
+
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:5px;box-shadow:inset 0 0 0 1px var(--line)}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:600 13px var(--body);border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:8px 12px;cursor:pointer}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel h2{font-family:var(--display);font-weight:700;font-size:26px;margin:0;line-height:1}
+.panel h3{font-family:var(--display);font-weight:700;font-size:21px;margin:0;line-height:1}
+.sub{font-size:13px;color:var(--muted)}
+.kv{display:flex;flex-direction:column;gap:6px}
+.sec{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.cands{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
+.cand{display:flex;align-items:baseline;gap:8px;font-size:14px;flex-wrap:wrap}
+.cand .ln{font-size:12px;color:var(--muted)}
+.badge{flex:none;font:700 11px var(--body);color:#fff;border-radius:4px;padding:2px 6px;min-width:22px;text-align:center;align-self:center}
+.badge.D{background:var(--dem)} .badge.R{background:var(--rep)} .badge.I{background:var(--ind)} .badge.O{background:var(--oth)}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.seg button{font:600 13px var(--body);border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:7px;padding:9px 4px;cursor:pointer}
+.seg button[aria-pressed="true"].D{background:var(--dem);border-color:var(--dem);color:#fff}
+.seg button[aria-pressed="true"].R{background:var(--rep);border-color:var(--rep);color:#fff}
+.seg button[aria-pressed="true"].I{background:var(--ind);border-color:var(--ind);color:#fff}
+.seg button[aria-pressed="true"].T{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.hbar{height:10px;border-radius:3px;overflow:hidden;display:flex;background:var(--toss)}
+.hbar span{height:100%}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.step{border:1px solid var(--line);border-radius:10px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--bg)}
+.step .v{font-family:var(--display);font-weight:700;font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+.step.D .v{color:var(--dem)} .step.R .v{color:var(--rep)} .step.I .v{color:var(--ind)}
+.step .pm{display:flex;gap:6px}
+.step .pm button{width:38px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font:700 18px var(--body);cursor:pointer}
+.step .pm button:disabled{opacity:.35;cursor:default}
+.quick{display:flex;flex-wrap:wrap;gap:6px}
+.link{font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:2px}
+
+.list{display:flex;flex-direction:column}
+.row{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:start;padding:10px 0;border:0;border-top:1px solid var(--line);cursor:pointer;background:none;text-align:left;color:inherit;font:inherit;width:100%}
+.row:first-child{border-top:0}
+.row .ab{font-family:var(--display);font-weight:700;font-size:19px;line-height:1.1}
+.row .names{display:flex;flex-wrap:wrap;gap:3px 12px;font-size:13.5px;min-width:0}
+.row .names span{display:inline-flex;align-items:center;gap:5px}
+.row .meta{font-size:12px;color:var(--muted);width:100%}
+.pk{font:700 11px var(--body);border-radius:4px;padding:2px 6px;background:var(--toss);color:var(--toss-fg);white-space:nowrap}
+.pk.D{background:var(--dem);color:#fff} .pk.R{background:var(--rep);color:#fff} .pk.I{background:var(--ind);color:#fff}
+.row.sel .ab{color:var(--focus)}
+.dotc{width:8px;height:8px;border-radius:50%;flex:none}
+.dotc.D{background:var(--dem)} .dotc.R{background:var(--rep)} .dotc.I{background:var(--ind)} .dotc.O{background:var(--oth)}
+.flips{display:flex;flex-wrap:wrap;gap:6px}
+.flip{font:600 12px var(--body);padding:4px 8px;border-radius:999px;color:#fff}
+.flip.D{background:var(--dem)} .flip.R{background:var(--rep)} .flip.I{background:var(--ind)}
+.cmp{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px 12px;align-items:center;font-size:13px;font-variant-numeric:tabular-nums}
+.cmp .h{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.cmp .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cmp .nm.act{color:var(--focus)}
+.cmp button{all:unset;cursor:pointer}
+.cmp button:focus-visible{outline:3px solid var(--focus)}
+textarea.code{width:100%;box-sizing:border-box;min-height:70px;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px;resize:vertical;word-break:break-all}
+.ptab{display:flex;flex-direction:column}
+.pr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:8px 0;border-top:1px solid var(--line);font-size:13px}
+.pr:first-child{border-top:0}
+.pr .src{font-weight:600}
+.pr .dt{font-size:12px;color:var(--muted)}
+.pr .res{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:2px 12px;font-variant-numeric:tabular-nums}
+.pr .res span{display:inline-flex;align-items:center;gap:5px}
+.pr a{font-size:12px}
+.lead{font:700 11px var(--body);border-radius:4px;padding:2px 6px;color:#fff;white-space:nowrap;align-self:start}
+.lead.D{background:var(--dem)} .lead.R{background:var(--rep)} .lead.I{background:var(--ind)} .lead.O{background:var(--oth)} .lead.T{background:var(--toss);color:var(--toss-fg)}
+.avgbox{display:flex;flex-direction:column;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px}
+.note{font-size:12.5px;color:var(--muted);max-width:65ch;margin:0}
+.toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);
+  font-size:13px;font-weight:600;padding:9px 14px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:calc(100% - 32px);z-index:5}
+.toast.on{opacity:1}
+@media (max-width:380px){.ltiles{grid-template-columns:repeat(auto-fill,minmax(46px,1fr))}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Election Day · Tuesday, Nov 3, 2026</div>
+    <h1>Midterm Map 2026</h1>
+  </header>
+
+  <div class="who">
+    <span class="lbl">Map of</span>
+    <select id="who-select" aria-label="Whose predictions"></select>
+    <input id="who-name" class="rename" maxlength="24" aria-label="Name for this map" placeholder="Name this map">
+    <div class="lock" id="who-lock"></div>
+  </div>
+
+  <div class="scope" role="tablist">
+    <button id="scope-nat" role="tab" data-scope="nat">National</button>
+    <button id="scope-loc" role="tab" data-scope="loc">NYC &amp; Orange County</button>
+  </div>
+  <div class="tabs" role="tablist" id="tabs"></div>
+
+  <section class="tally" aria-live="polite">
+    <div class="nums">
+      <div class="side d"><span class="big" id="n-d">0</span><span class="lbl" id="l-d">Democrats</span></div>
+      <div class="mid"><span class="n" id="n-t">0</span><span class="lbl" id="t-lbl">Toss-up</span></div>
+      <div class="side r"><span class="big" id="n-r">0</span><span class="lbl" id="l-r">Republicans</span></div>
+    </div>
+    <div class="bar-wrap"><div class="bar" id="bar"></div><div class="marker" id="marker"></div></div>
+    <div class="status" id="status"></div>
+  </section>
+
+  <div class="layers" role="group" aria-label="Map layers">
+    <span class="lbl">Layers</span>
+    <button class="layer" id="layer-held" aria-pressed="true"><span class="sw"></span>Seat held by</button>
+    <button class="layer" id="layer-ballot" aria-pressed="true"><span class="sw"></span>On the ballot</button>
+    <button class="layer" id="layer-polls" aria-pressed="true"><span class="sw"></span>Polls</button>
+  </div>
+
+  <div id="mapbox"></div>
+  <div class="legend" id="legend"></div>
+  <div id="detail"></div>
+  <div class="actions" id="actions"></div>
+  <div id="extra"></div>
+  <div id="polls"></div>
+  <div id="ballot"></div>
+  <div id="compare"></div>
+  <div id="share"></div>
+  <p class="note" id="note"></p>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ===================== DATA ===================== */
+const TILES=[["AK",0,0],["ME",0,11],["WI",1,6],["VT",1,10],["NH",1,11],["WA",2,1],["ID",2,2],["MT",2,3],["ND",2,4],["MN",2,5],["IL",2,6],["MI",2,7],["NY",2,9],["MA",2,10],["OR",3,1],["NV",3,2],["WY",3,3],["SD",3,4],["IA",3,5],["IN",3,6],["OH",3,7],["PA",3,8],["NJ",3,9],["CT",3,10],["RI",3,11],["CA",4,1],["UT",4,2],["CO",4,3],["NE",4,4],["MO",4,5],["KY",4,6],["WV",4,7],["VA",4,8],["MD",4,9],["DE",4,10],["AZ",5,2],["NM",5,3],["KS",5,4],["AR",5,5],["TN",5,6],["NC",5,7],["SC",5,8],["DC",5,9],["OK",6,4],["LA",6,5],["MS",6,6],["AL",6,7],["GA",6,8],["HI",7,0],["TX",7,4],["FL",7,9]];
+const NAMES={AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",DE:"Delaware",DC:"District of Columbia",FL:"Florida",GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming"};
+const SEN_UP={AL:"R",AK:"R",AR:"R",ID:"R",IA:"R",KS:"R",KY:"R",LA:"R",ME:"R",MS:"R",MT:"R",NE:"R",NC:"R",OK:"R",SC:"R",SD:"R",TN:"R",TX:"R",WV:"R",WY:"R",OH:"R",FL:"R",
+  CO:"D",DE:"D",GA:"D",IL:"D",MA:"D",MI:"D",MN:"D",NH:"D",NJ:"D",NM:"D",OR:"D",RI:"D",VA:"D"};
+const SPECIAL=new Set(["OH","FL"]);
+const HOLD={D:34,R:31};
+const SEATS={AL:7,AK:1,AZ:9,AR:4,CA:52,CO:8,CT:5,DE:1,FL:28,GA:14,HI:2,ID:2,IL:17,IN:9,IA:4,KS:4,KY:6,LA:6,ME:2,MD:8,MA:9,MI:13,MN:8,MS:4,MO:8,MT:2,NE:3,NV:4,NH:2,NJ:12,NM:3,NY:26,NC:14,ND:1,OH:15,OK:5,OR:6,PA:17,RI:2,SC:7,SD:1,TN:9,TX:38,UT:4,VT:1,VA:11,WA:10,WV:2,WI:8,WY:1};
+// Senate ballot: [seat holder now, status, [[candidate, party]], note]. Party: D R I L G O
+const SEN_INFO={
+AL:["Tommy Tuberville","open",[["Barry Moore","R"],["Everett Wess","D"]],"Tuberville is running for governor."],
+AK:["Dan Sullivan","running",[["Dan Sullivan","R"],["Mary Peltola","D"],["Gerald Heikes","R"],["Daniel J. Sullivan Jr.","O"]],"Top-four ballot with ranked-choice voting."],
+AR:["Tom Cotton","running",[["Tom Cotton","R"],["Hallie Shoffner","D"],["Jeff Wadlin","L"]],""],
+CO:["John Hickenlooper","running",[["John Hickenlooper","D"],["Mark Baisley","R"],["Blake Huber","L"],["Bob Chew","O"],["Chris Baum","O"],["Adam Withrow","O"]],""],
+DE:["Chris Coons","running",[["Chris Coons","D"],["Michael Katz","R"]],""],
+FL:["Ashley Moody","special",[["Ashley Moody","R"],["Angie Nixon","D"],["Neil Gillespie","I"]],"Special election for the rest of Rubio's term, to January 2029."],
+GA:["Jon Ossoff","running",[["Jon Ossoff","D"],["Mike Collins","R"]],"A Dec. 1 runoff follows if no one passes 50%."],
+ID:["Jim Risch","running",[["Jim Risch","R"],["Todd Achilles","I"],["Matt Loesby","L"],["Natalie Fleming","I"]],"No Democrat on the ballot after the nominee withdrew in July."],
+IL:["Dick Durbin","open",[["Juliana Stratton","D"],["Don Tracy","R"],["Whitfield Harrington Jr.","O"]],"Durbin is retiring."],
+IA:["Joni Ernst","open",[["Ashley Hinson","R"],["Josh Turek","D"],["Thomas Laehn","L"]],"Ernst is retiring."],
+KS:["Roger Marshall","running",[["Roger Marshall","R"],["Adam Hamilton","D"],["David Graham","L"]],""],
+KY:["Mitch McConnell","open",[["Andy Barr","R"],["Charles Booker","D"],["Christopher Campbell","O"]],"McConnell is retiring."],
+LA:["Bill Cassidy","open",[["Julia Letlow","R"],["Jamie Davis","D"]],"Cassidy lost the May party primary."],
+ME:["Susan Collins","running",[["Susan Collins","R"],["Troy Jackson","D"]],"Primary winner Graham Platner withdrew in July. Ranked-choice voting."],
+MA:["Ed Markey","running",[["Ed Markey","D"],["John Deaton","R"],["Shiva Ayyadurai","I"],["Joe Tache","O"]],""],
+MI:["Gary Peters","open",[["Abdul El-Sayed","D"],["Mike Rogers","R"],["Lydia Christensen","L"],["Douglas P. Marsh","G"],["Tim Long","O"],["Walter Kristy","O"]],"Peters is retiring."],
+MN:["Tina Smith","open",[["Peggy Flanagan","D"],["Michele Tafoya","R"],["Rebecca Whiting","L"],["Marisa Simonetti","I"]],"Smith is retiring."],
+MS:["Cindy Hyde-Smith","running",[["Cindy Hyde-Smith","R"],["Scott Colom","D"],["Ty Pinkins","I"]],""],
+MT:["Steve Daines","open",[["Kurt Alme","R"],["Alani Bankhead","D"],["Seth Bodnar","I"],["Kyle Austin","L"]],"Daines withdrew in March."],
+NE:["Pete Ricketts","running",[["Pete Ricketts","R"],["Dan Osborn","I"],["Chuck Conboy","O"],["Mike Marvin","O"],["Robin Richards","O"]],"No Democrat on the ballot; state Democrats back Osborn."],
+NH:["Jeanne Shaheen","open",[["Chris Pappas","D"],["John E. Sununu","R"],["Edmond LaPlante","O"]],"Shaheen is retiring."],
+NJ:["Cory Booker","running",[["Cory Booker","D"],["Justin Murphy","R"],["Veronica Fernandez","I"],["Joanne Kuniansky","O"]],""],
+NM:["Ben Ray Luján","running",[["Ben Ray Luján","D"],["Larry Marker","R"]],""],
+NC:["Thom Tillis","open",[["Roy Cooper","D"],["Michael Whatley","R"],["Shannon Bray","L"],["Michael Dublin","G"]],"Tillis is retiring."],
+OH:["Jon Husted","special",[["Jon Husted","R"],["Sherrod Brown","D"],["Bill Redpath","L"],["Greg Levy","I"]],"Special election for the rest of Vance's term, to January 2029."],
+OK:["Alan Armstrong","open",[["Kevin Hern","R"],["N'Kiyla Thomas","D"],["Sevier White","L"],["Ron Meinhardt","I"],["Curtis Stinnett","I"]],"Mullin resigned in March; the interim appointee isn't running."],
+OR:["Jeff Merkley","running",[["Jeff Merkley","D"],["David Brock Smith","R"],["Gary Dye","L"],["Chris Henry","O"]],""],
+RI:["Jack Reed","running",[["Jack Reed","D"],["Raymond McKay","R"],["Michael Bahry","I"]],""],
+SC:["Darline Graham","running",[["Darline Graham","R"],["Annie Andrews","D"],["Kasie Whitener","L"],["Mark Hackett","O"]],"Appointed in July after Sen. Lindsey Graham's death."],
+SD:["Mike Rounds","running",[["Mike Rounds","R"],["Brian Bengs","I"]],"No Democrat on the ballot."],
+TN:["Bill Hagerty","running",[["Bill Hagerty","R"],["Marquita Bradshaw","D"]],"Eight minor independents are also on the ballot."],
+TX:["John Cornyn","open",[["Ken Paxton","R"],["James Talarico","D"],["Ted Brown","L"]],"Cornyn lost the May runoff to Paxton."],
+VA:["Mark Warner","running",[["Mark Warner","D"],["Bert Mizusawa","R"]],""],
+WV:["Shelley Moore Capito","running",[["Shelley Moore Capito","R"],["Rachel Fetty Anderson","D"],["S. Marshall Wilson","O"]],""],
+WY:["Cynthia Lummis","open",[["Harriet Hageman","R"],["James Byrd","D"]],"Lummis is retiring."]
+};
+const senUrl=s=>s==="TX"?"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Texas"
+  :`https://ballotpedia.org/United_States_Senate_${SPECIAL.has(s)?"special_":""}election_in_${NAMES[s].replace(/ /g,"_")},_2026`;
+// Today's House delegations (Sept 2 2026 rosters; CA's I is Kevin Kiley, who left the GOP in March)
+const HOUSE_NOW={AL:{D:2,R:5},AK:{D:0,R:1},AZ:{D:3,R:6},AR:{D:0,R:4},CA:{D:43,R:8,I:1},CO:{D:4,R:4},CT:{D:5,R:0},DE:{D:1,R:0},FL:{D:7,R:20,V:1},GA:{D:5,R:9},HI:{D:2,R:0},ID:{D:0,R:2},IL:{D:14,R:3},IN:{D:2,R:7},IA:{D:0,R:4},KS:{D:1,R:3},KY:{D:1,R:5},LA:{D:2,R:4},ME:{D:2,R:0},MD:{D:7,R:1},MA:{D:9,R:0},MI:{D:6,R:7},MN:{D:4,R:4},MS:{D:1,R:3},MO:{D:2,R:6},MT:{D:0,R:2},NE:{D:0,R:3},NV:{D:3,R:1},NH:{D:2,R:0},NJ:{D:9,R:3},NM:{D:3,R:0},NY:{D:19,R:7},NC:{D:4,R:10},ND:{D:0,R:1},OH:{D:5,R:10},OK:{D:0,R:5},OR:{D:5,R:1},PA:{D:7,R:10},RI:{D:2,R:0},SC:{D:1,R:6},SD:{D:0,R:1},TN:{D:1,R:8},TX:{D:13,R:24,V:1},UT:{D:0,R:4},VT:{D:1,R:0},VA:{D:6,R:5},WA:{D:8,R:2},WV:{D:0,R:2},WI:{D:2,R:6},WY:{D:0,R:1}};
+const houseUrl=s=>SEATS[s]===1?`https://ballotpedia.org/United_States_House_of_Representatives_election_in_${NAMES[s].replace(/ /g,"_")},_2026`
+  :`https://ballotpedia.org/United_States_House_of_Representatives_elections_in_${NAMES[s].replace(/ /g,"_")},_2026`;
+
+// Polls: {polls:[{p:pollster,d:dates,n:sample,r:{name:pct},u:url}],avg:[{s:source,d:date,r:{name:pct},u:url}],note}
+const POLLS=/*POLLS*/{"sen":{"AL":{"polls":[{"p":"Chism Strategies (D) (270toWin labels it Blueprint Polling)","d":"Oct 22–24","n":"695 LV","r":{"Moore":48,"Wess":40},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Alabama"},{"p":"Cygnal (R) for Alabama Daily News/Gray Media","d":"Oct 16–17","n":"500 LV","r":{"Moore":50,"Wess":35},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Alabama"},{"p":"The Alabama Poll","d":"Oct 15–16","n":"600 LV","r":{"Moore":56,"Wess":35},"u":"https://www.realclearpolling.com/polls/senate/general/2026/alabama/moore-vs-wess"},{"p":"RMG Research (R) for Alabama Policy Action","d":"Sep 21–25","n":"800 RV","r":{"Moore":54,"Wess":33},"u":"https://www.realclearpolling.com/polls/senate/general/2026/alabama/moore-vs-wess"},{"p":"yes. every kid.","d":"Jul 8–11","n":"601 LV","r":{"Moore":47,"Wess":32},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Alabama"}],"avg":[{"s":"270toWin","d":"Nov 2 (avg of 3 polls)","r":{"Moore":52.7,"Wess":36.0},"u":"https://www.270towin.com/2026-senate-polls/alabama"},{"s":"RealClearPolling","d":"polls 9/21–10/16","r":{"Moore":55.0,"Wess":34.0},"u":"https://www.realclearpolling.com/polls/senate/general/2026/alabama/moore-vs-wess"}],"note":"Only 5 general-election polls found; RCP average uses only 2 polls."},"AK":{"polls":[{"p":"InsiderAdvantage (R)","d":"Oct 31–Nov 1","n":"1,200 LV","r":{"Sullivan":48,"Peltola":48},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Alaska"},{"p":"NYT/Siena","d":"Oct 23–30","n":"610 LV","r":{"Sullivan":46,"Peltola":48},"u":"https://www.realclearpolling.com/polls/senate/general/2026/alaska/peltola-vs-sullivan"},{"p":"Alaska Survey Research","d":"Oct 26–29","n":"1,326 LV","r":{"Sullivan":46,"Peltola":48},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Alaska"},{"p":"Public Policy Polling (D)","d":"Oct 14–15","n":"578 RV","r":{"Sullivan":47,"Peltola":48},"u":"https://www.realclearpolling.com/polls/senate/general/2026/alaska/peltola-vs-sullivan"},{"p":"Rasmussen Reports (R)","d":"Oct 12–15","n":"775 LV","r":{"Sullivan":42,"Peltola":44},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Alaska"},{"p":"Data for Progress (D)","d":"Oct 8–16","n":"694 LV","r":{"Sullivan":44,"Peltola":47},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Alaska"}],"avg":[{"s":"270toWin","d":"Nov 2 (avg of 2 polls)","r":{"Sullivan":45.5,"Peltola":49.0},"u":"https://www.270towin.com/2026-senate-polls/alaska"},{"s":"RealClearPolling","d":"polls 10/8–11/1","r":{"Sullivan":48.2,"Peltola":49.2},"u":"https://www.realclearpolling.com/polls/senate/general/2026/alaska/peltola-vs-sullivan"},{"s":"FiftyPlusOne","d":"Nov 2","r":{"Sullivan":48.0,"Peltola":49.7},"u":"https://fiftyplusone.news/polls/senate/general/alaska"},{"s":"Decision Desk HQ","d":"through Nov 1, updated Nov 2","r":{"Sullivan":47.8,"Peltola":49.2},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Alaska"},{"s":"Silver Bulletin","d":"through Nov 1, updated Nov 2","r":{"Sullivan":45.1,"Peltola":47.8},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Alaska"}],"note":"Top-4 RCV. Poll figures are first-choice/full-ballot (Dan J. Sullivan (I) and Gerald Heikes (R) also on ballot, ~1–5% each). Final-round RCV results differ: IA Oct 31–Nov 1 50–50; ASR Oct 26–29 listed by RCP as 49–51; DFP Oct 8–16 RCP 49–51; Rasmussen RCP head-to-head 48–47."},"AR":{"polls":[{"p":"Hendrix College / Talk Business & Politics","d":"Oct 8–13","n":"709 LV","r":{"Cotton":50,"Shoffner":41},"u":"https://www.270towin.com/2026-senate-polls/arkansas"},{"p":"GrayHouse (R) (270toWin lists J.L. Partners)","d":"Aug 14–18","n":"803 LV","r":{"Cotton":51,"Shoffner":35},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Arkansas"},{"p":"Hendrix College / Talk Business & Politics","d":"Aug 11–12","n":"1,217 LV","r":{"Cotton":44,"Shoffner":47},"u":"https://www.270towin.com/2026-senate-polls/arkansas"},{"p":"2040 Strategy Group (D) for Shoffner campaign","d":"Jul 17–25","n":"586 LV","r":{"Cotton":46,"Shoffner":43},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Arkansas"}],"avg":[{"s":"Silver Bulletin","d":"through Oct 29, updated Oct 31","r":{"Cotton":52.7,"Shoffner":39.5},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Arkansas"}],"note":"Libertarian Jeff Wadlin also on ballot (3–4.5% in polls). 270toWin page shows polls but no average; RCP page would not load."},"CO":{"polls":[{"p":"CU Boulder/YouGov","d":"Oct 9–20","n":"710 LV","r":{"Hickenlooper":57,"Baisley":39},"u":"https://www.270towin.com/2026-senate-polls/colorado"},{"p":"Lake Research Partners (D)","d":"Sep 16–30","n":"600 RV","r":{"Hickenlooper":52,"Baisley":38},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Colorado"}],"avg":[],"note":"Only 2 general-election polls found; no published aggregator average found (RCP page would not load)."},"DE":{"polls":[],"avg":[],"note":"no public polls (general election Coons v Katz); Wikipedia lists only a Dem primary poll; 270toWin has no Delaware Senate poll page (404)."},"FL":{"polls":[{"p":"Targoz Market Research","d":"published Nov 2 (field dates not shown)","n":"1,200 LV","r":{"Moody":52,"Nixon":43},"u":"https://www.270towin.com/2026-senate-polls/florida"},{"p":"Big Data Poll","d":"Oct 26–30","n":"1,067 LV","r":{"Moody":48,"Nixon":42},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_special_election_in_Florida"},{"p":"Stetson University","d":"Oct 26–30","n":"852 RV (270toWin: 861 LV)","r":{"Moody":49,"Nixon":45},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_special_election_in_Florida"},{"p":"InsiderAdvantage (R)","d":"Oct 28–29","n":"1,200 LV","r":{"Moody":49,"Nixon":43},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_special_election_in_Florida"},{"p":"Political Matrix/The Listener Group","d":"Oct 26–28","n":"500 LV","r":{"Moody":42,"Nixon":36},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_special_election_in_Florida"},{"p":"St. Pete Polls","d":"Oct 25–27","n":"916 LV","r":{"Moody":49,"Nixon":45},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_special_election_in_Florida"}],"avg":[{"s":"270toWin","d":"Nov 2 (avg of 7 polls)","r":{"Moody":50.4,"Nixon":44.3},"u":"https://www.270towin.com/2026-senate-polls/florida"},{"s":"FiftyPlusOne","d":"Nov 2","r":{"Moody":49.6,"Nixon":43.6},"u":"https://fiftyplusone.news/polls/senate/general/florida"},{"s":"RealClearPolling","d":"polls Oct 2–30, updated Oct 31","r":{"Moody":49.7,"Nixon":43.4},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_special_election_in_Florida"},{"s":"Decision Desk HQ","d":"through Oct 30, updated Oct 31","r":{"Moody":48.2,"Nixon":42.5},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_special_election_in_Florida"},{"s":"Silver Bulletin","d":"through Oct 30, updated Oct 31","r":{"Moody":49.2,"Nixon":43.3},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_special_election_in_Florida"}],"note":"Big Data Poll w/ leaners 52–45 (LV); RV 47–41 (51–45 w/ leaners). Also NYT/Siena Oct 19–25, 813 LV: 50–44. Two RCP figures given because the RCP page fetched showed an older window than Wikipedia's citation."},"GA":{"polls":[{"p":"InsiderAdvantage (R)","d":"Oct 31–Nov 2","n":"2,500 LV","r":{"Ossoff":53,"Collins":46},"u":"https://www.270towin.com/2026-senate-polls/georgia"},{"p":"Echelon Insights (R) for NetChoice","d":"Oct 16–23","n":"508 LV","r":{"Ossoff":55,"Collins":40},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Georgia"},{"p":"ActiVote","d":"Oct 6–20","n":"400 LV","r":{"Ossoff":54,"Collins":46},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Georgia"},{"p":"Quantus Insights (R)","d":"Oct 15–17","n":"755 LV","r":{"Ossoff":52,"Collins":45},"u":"https://www.realclearpolling.com/polls/senate/general/2026/georgia/ossoff-vs-collins"},{"p":"University of Georgia / AJC","d":"Oct 7–15","n":"1,000 LV","r":{"Ossoff":48,"Collins":40},"u":"https://www.realclearpolling.com/polls/senate/general/2026/georgia/ossoff-vs-collins"},{"p":"Trafalgar Group (R)","d":"Oct 7–9","n":"1,101 LV","r":{"Ossoff":51,"Collins":43},"u":"https://www.realclearpolling.com/polls/senate/general/2026/georgia/ossoff-vs-collins"}],"avg":[{"s":"270toWin","d":"Nov 2 (avg of 5 polls)","r":{"Ossoff":53.2,"Collins":44.0},"u":"https://www.270towin.com/2026-senate-polls/georgia"},{"s":"FiftyPlusOne","d":"Nov 2","r":{"Ossoff":52.8,"Collins":43.2},"u":"https://fiftyplusone.news/polls/senate/general/georgia"},{"s":"RealClearPolling","d":"polls 9/21–10/17","r":{"Ossoff":51.2,"Collins":43.0},"u":"https://www.realclearpolling.com/polls/senate/general/2026/georgia/ossoff-vs-collins"},{"s":"Decision Desk HQ","d":"through Oct 20, updated Oct 21","r":{"Ossoff":51.5,"Collins":43.7},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Georgia"},{"s":"Silver Bulletin","d":"through Oct 17, updated Oct 20","r":{"Ossoff":51.3,"Collins":42.4},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Georgia"}],"note":"Quantus also reported 53–45 (leaners) and 54–46 (two-way). Wikipedia lists RCP at 52.0–43.4 (Sep 15–Oct 17, updated Oct 20), which differs from the RCP page as fetched."},"ID":{"polls":[{"p":"VoteNexus Research (for Knock Every Door PAC & Achilles campaign)","d":"Oct 21–22","n":"700 LV","r":{"Risch":49,"Achilles":43},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Idaho"},{"p":"Peak Insights (R) (for Risch campaign)","d":"Sep 28–30","n":"500 LV","r":{"Risch":49,"Achilles":24},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Idaho"},{"p":"Advanced Targeting Research","d":"Sep 13–16","n":"700 RV","r":{"Risch":39,"Achilles":50},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Idaho"},{"p":"Peak Insights (R) (for Risch campaign)","d":"Aug 11–13","n":"500 LV","r":{"Risch":52,"Achilles":18},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Idaho"},{"p":"The Bullfinch Group","d":"Aug 4–7","n":"608 LV","r":{"Risch":33,"Achilles":38},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Idaho"},{"p":"Change Research (D)","d":"Jul 28–30","n":"1,213 LV","r":{"Risch":45,"Achilles":21},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Idaho"}],"avg":[{"s":"Silver Bulletin","d":"through Aug 13, updated Oct 26","r":{"Risch":50.6,"Achilles":34.6},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Idaho"}],"note":"Polls vary widely, several are campaign/PAC-sponsored. ATR full ballot (w/ Loesby L 5%): 39–46. Bullfinch alt. version: 34–30. Change Research incl. Natalie Fleming (I) 8%. No 270toWin Idaho page found."},"IL":{"polls":[{"p":"ActiVote","d":"Oct 21–30","n":"400 LV","r":{"Stratton":56,"Tracy":44},"u":"https://www.270towin.com/2026-senate-polls/illinois"},{"p":"ActiVote","d":"Sep 26–Oct 20","n":"400 LV","r":{"Stratton":58.5,"Tracy":41.5},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Illinois"},{"p":"Public Policy Polling (D)","d":"Sep 30–Oct 1","n":"569 LV (270toWin: RV)","r":{"Stratton":49,"Tracy":36},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Illinois"}],"avg":[{"s":"270toWin","d":"Nov 2 (avg of 2 polls)","r":{"Stratton":52.5,"Tracy":40.0},"u":"https://www.270towin.com/2026-senate-polls/illinois"}],"note":"Only 3 general-election polls found. RCP page would not load."},"IA":{"polls":[{"p":"NYT/Siena","d":"Oct 26–Nov 1","n":"705 LV","r":{"Hinson":47,"Turek":48},"u":"https://www.nytimes.com/interactive/2026/11/01/polls/times-siena-ia-poll-toplines.html"},{"p":"GrayHouse","d":"Oct 28–31","n":"601 LV","r":{"Hinson":48,"Turek":46},"u":"https://www.grayhouse.com/post/grayhouse-poll-hinson-leads-in-iowa-by-2"},{"p":"Rasmussen Reports (R)","d":"Oct 27–31","n":"901 LV","r":{"Hinson":47,"Turek":46},"u":"https://www.rasmussenreports.com/public_content/politics/public_surveys/toplines_iowa_senate_october_27_31_2026"},{"p":"YouGov","d":"Oct 26–29","n":"2,020 LV","r":{"Hinson":49,"Turek":50},"u":"https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_ia_20261026_lv.pdf"},{"p":"co/efficient (R)","d":"Oct 28","n":"1,020 LV","r":{"Hinson":48,"Turek":46},"u":"https://battlegrounds.coefficient.org/ia/"},{"p":"Echelon Insights (R), for NetChoice","d":"Oct 16–23","n":"403 LV","r":{"Hinson":43,"Turek":45},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Iowa"}],"avg":[{"s":"270toWin (avg of 5 polls)","d":"Nov 2","r":{"Hinson":47.0,"Turek":47.0},"u":"https://www.270towin.com/2026-senate-polls/iowa"},{"s":"FiftyPlusOne","d":"Nov 2","r":{"Hinson":46.8,"Turek":47.1},"u":"https://fiftyplusone.news/polls/senate/general/iowa"},{"s":"RealClearPolling","d":"Nov 2 (range Oct 9–Nov 1)","r":{"Hinson":46.9,"Turek":46.4},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Iowa"},{"s":"Decision Desk HQ","d":"Nov 2","r":{"Hinson":47.2,"Turek":46.5},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Iowa"},{"s":"Silver Bulletin","d":"Nov 2","r":{"Hinson":46.6,"Turek":47.3},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Iowa"}],"note":"All recent polls are within about 2 points. Wikipedia's average of the aggregators: 46.9 to 46.9 (tie)."},"KS":{"polls":[{"p":"Survey 160","d":"Oct 27–Nov 1","n":"1,267 LV","r":{"Marshall":44,"Hamilton":50},"u":"https://www.survey160.com/methodological-research-blog/survey-160-pre-election-surveys-in-four-states"},{"p":"NYT/Siena","d":"Oct 27–Nov 1","n":"736 LV","r":{"Marshall":44,"Hamilton":49,"Graham (L)":4},"u":"https://www.nytimes.com/interactive/2026/11/01/polls/times-siena-ks-poll-toplines.html"},{"p":"YouGov","d":"Oct 26–29","n":"2,092 LV","r":{"Marshall":49,"Hamilton":50},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Kansas"},{"p":"Emerson College","d":"Oct 26–28","n":"800 LV","r":{"Marshall":47,"Hamilton":50,"Graham (L)":3},"u":"https://emersoncollegepolling.com/october-2026-kansas-poll-hamilton-maintains-edge-over-marshall/"},{"p":"Washington Post/Schar School (SSPG)","d":"Oct 22–26","n":"801 LV","r":{"Marshall":43,"Hamilton":52,"Graham (L)":4},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Kansas"},{"p":"CNN/SSRS","d":"Oct 20–26","n":"838 LV","r":{"Marshall":45,"Hamilton":49},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Kansas"}],"avg":[{"s":"270toWin (avg of 5 polls)","d":"Nov 2","r":{"Marshall":45.2,"Hamilton":49.8},"u":"https://www.270towin.com/2026-senate-polls/kansas"},{"s":"FiftyPlusOne","d":"Nov 2","r":{"Marshall":45.5,"Hamilton":49.3},"u":"https://fiftyplusone.news/polls/senate/general/kansas"},{"s":"RealClearPolling","d":"Nov 1 (range Oct 13–Nov 1)","r":{"Marshall":46.2,"Hamilton":49.8},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Kansas"},{"s":"Decision Desk HQ","d":"Nov 1","r":{"Marshall":45.3,"Hamilton":48.7},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Kansas"},{"s":"Silver Bulletin","d":"Nov 2","r":{"Marshall":46.1,"Hamilton":49.4},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Kansas"}],"note":"Libertarian David Graham is included in some polls. Survey 160 and Emerson each published more than one version of their numbers; the first-listed LV version is shown here (Emerson's second version: 45–49). Wikipedia lists Hamilton as (D) in these tables, though an earlier hypothetical table listed him as (I)."},"KY":{"polls":[{"p":"Global Strategy Group (D)","d":"Aug 24–27","n":"600 LV","r":{"Barr":49,"Booker":40},"u":"https://fox56news.com/news/kentucky/new-poll-shows-charles-booker-trailing-just-behind-andy-barr-in-race-for-senate/"},{"p":"Public Policy Polling (D), Booker-sponsored","d":"Dec 18–19, 2025","n":"650 V","r":{"Barr":49,"Booker":38},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Kentucky"}],"avg":[],"note":"Only two public general-election polls were found, both Democratic-sponsored, and none in the last 6 weeks. No published average: 270toWin's KY page lists only primary polls, and FiftyPlusOne has no average for the race."},"LA":{"polls":[{"p":"Hart Research Associates (D)","d":"Oct 28–29","n":"502 LV","r":{"Letlow":45,"Davis":45},"u":"https://www.nola.com/gambit/news/politics_elections/new-poll-shows-jamie-davis-tied-with-gop-rep-julia-letlow-in-louisiana-senate-race/article_84317c86-b35e-4e1a-bab4-8ec227e545ee.html"},{"p":"Hart Research Associates (D)","d":"Sep 17–19","n":"500 LV","r":{"Letlow":48,"Davis":44},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Louisiana"},{"p":"Public Policy Polling (D)","d":"Jul 21–22","n":"518 RV","r":{"Letlow":41,"Davis":37},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Louisiana"}],"avg":[],"note":"All three public general-election polls are Democratic-aligned. No published average: 270toWin's LA page lists only primary and primary-runoff polls, and FiftyPlusOne has no average."},"ME":{"polls":[{"p":"Survey 160","d":"Oct 27–Nov 1","n":"1,323 LV","r":{"Collins":47,"Jackson":50},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Maine"},{"p":"NYT/Siena","d":"Oct 27–Nov 1","n":"714 LV","r":{"Collins":45,"Jackson":51},"u":"https://www.nytimes.com/interactive/2026/11/01/polls/times-siena-me-poll-toplines.html"},{"p":"University of New Hampshire","d":"Oct 27–31","n":"1,654 LV","r":{"Collins":45,"Jackson":54},"u":"https://scholars.unh.edu/survey_center_polls/1013/"},{"p":"YouGov","d":"Oct 26–29","n":"1,503 LV","r":{"Collins":47,"Jackson":52},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Maine"},{"p":"Data for Progress (D)","d":"Oct 23–27","n":"652 LV","r":{"Collins":45,"Jackson":50},"u":"https://www.dataforprogress.org/blog/2026/10/30/democratic-senate-candidates-lead-in-maine-michigan-and-texas"},{"p":"CNN/SSRS","d":"Oct 20–26","n":"783 LV","r":{"Collins":45,"Jackson":49},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Maine"}],"avg":[{"s":"270toWin (avg of 8 polls)","d":"Nov 2","r":{"Collins":45.6,"Jackson":50.4},"u":"https://www.270towin.com/2026-senate-polls/maine"},{"s":"FiftyPlusOne","d":"Nov 2","r":{"Collins":45.9,"Jackson":50.6},"u":"https://fiftyplusone.news/polls/senate/general/maine"},{"s":"RealClearPolling","d":"Nov 1 (range Oct 8–Nov 1)","r":{"Collins":46.6,"Jackson":49.9},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Maine"},{"s":"Decision Desk HQ","d":"Nov 2","r":{"Collins":45.3,"Jackson":51.0},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Maine"},{"s":"Silver Bulletin","d":"Nov 2","r":{"Collins":46.3,"Jackson":50.3},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Maine"}],"note":"The race uses ranked-choice voting. Wikipedia lists these as head-to-head Collins vs Jackson numbers and does not label them first-round vs final-round. Other polls since Oct 1: Marist Oct 22–25 (LV 47–49; 1,449 RV 44–53), Trafalgar (R) Oct 21–23 (47–47), Fox/Beacon-Shaw Oct 16–20 (1,514 LV 49–49). Older Collins vs Platner polls (Platner suspended Jul 8): PPP (D) Jul 7, 785 LV, 47–42; Tavern (D) Jul 3–6, 48–52; NYT/PPH/Siena Jun 19–26, 608 LV, 47–49. Jackson only became the nominee in July, so those polls are not comparable."},"MA":{"polls":[{"p":"University of New Hampshire","d":"Oct 27–31","n":"905 LV","r":{"Markey":53,"Deaton":32,"Tache (PSL)":7},"u":"https://scholars.unh.edu/survey_center_polls/1014/"},{"p":"UMass Lowell","d":"published Oct 29 (field dates not shown)","n":"850 LV","r":{"Markey":55,"Deaton":26},"u":"https://www.270towin.com/2026-senate-polls/massachusetts"},{"p":"Suffolk University/Boston Globe","d":"Oct 14–18","n":"500 LV","r":{"Markey":60,"Deaton":32,"Tache (PSL)":1},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Massachusetts"},{"p":"UMass Amherst/YouGov","d":"Oct 5–12","n":"800 RV","r":{"Markey":56,"Deaton":29,"Tache (PSL)":3},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Massachusetts"},{"p":"MassINC Polling Group","d":"Sep 14–22","n":"800 LV","r":{"Markey":54,"Deaton":28,"Tache (PSL)":2},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Massachusetts"},{"p":"University of New Hampshire","d":"Sep 17–21","n":"564 LV","r":{"Markey":53,"Deaton":30,"Tache (PSL)":9},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Massachusetts"}],"avg":[{"s":"270toWin (avg of 4 polls)","d":"Nov 2","r":{"Markey":56.0,"Deaton":29.8},"u":"https://www.270towin.com/2026-senate-polls/massachusetts"},{"s":"RealClearPolling","d":"range 9/14–10/18","r":{"Markey":55.8,"Deaton":29.8},"u":"https://www.realclearpolling.com/polls/senate/general/2026/massachusetts/deaton-vs-markey"},{"s":"Silver Bulletin","d":"Oct 19 (polls through Oct 12)","r":{"Markey":56.5,"Deaton":29.9},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Massachusetts"}],"note":"Joe Tache (PSL) is included in some polls. The UMass Lowell poll appears on 270toWin but not on Wikipedia. FiftyPlusOne has no average for this race."},"MI":{"polls":[{"p":"Research Co.","d":"Oct 30–Nov 1","n":"450 LV","r":{"El-Sayed":48,"Rogers":46},"u":"https://researchco.ca/2026/11/01/midterms-2026-one/"},{"p":"NYT/Siena","d":"Oct 23–Nov 1","n":"1,011 LV","r":{"El-Sayed":53,"Rogers":42},"u":"https://www.nytimes.com/interactive/2026/11/01/polls/times-siena-mi-poll-toplines.html"},{"p":"Rasmussen Reports (R)","d":"Oct 28–29","n":"745 LV","r":{"El-Sayed":49,"Rogers":44},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Michigan"},{"p":"YouGov","d":"Oct 26–29","n":"2,093 LV","r":{"El-Sayed":51,"Rogers":47},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Michigan"},{"p":"Mitchell Research & Communications","d":"Oct 26–27","n":"636 LV","r":{"El-Sayed":51,"Rogers":44},"u":"https://www.cbsnews.com/detroit/news/el-sayed-widens-lead-rogers-michigan-senate-poll/"},{"p":"CNN/SSRS","d":"Oct 20–27","n":"768 LV","r":{"El-Sayed":49,"Rogers":42},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Michigan"}],"avg":[{"s":"270toWin (avg of 9 polls)","d":"Nov 2","r":{"El-Sayed":50.4,"Rogers":44.8},"u":"https://www.270towin.com/2026-senate-polls/michigan"},{"s":"FiftyPlusOne","d":"Nov 2","r":{"El-Sayed":49.8,"Rogers":44.6},"u":"https://fiftyplusone.news/polls/senate/general/michigan"},{"s":"RealClearPolling","d":"Nov 1 (range Oct 15–Nov 1)","r":{"El-Sayed":50.1,"Rogers":44.8},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Michigan"},{"s":"Decision Desk HQ","d":"Nov 2","r":{"El-Sayed":49.6,"Rogers":44.4},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Michigan"},{"s":"Silver Bulletin","d":"Nov 2","r":{"El-Sayed":49.9,"Rogers":45.2},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Michigan"}],"note":"270toWin also lists Trafalgar (R), published Nov 2, 1,087 LV: El-Sayed 47, Rogers 46 (not yet on Wikipedia). 270toWin shows Research Co. as 51–48, while Wikipedia shows 48–46; 270toWin's figure may be a leaners or two-way version, which I could not confirm. The 270toWin average differs slightly from the 50.9/44.6 cited on Wikipedia."},"MN":{"polls":[{"p":"Research Co.","d":"Oct 30–Nov 1","n":"450 LV","r":{"Flanagan":48,"Tafoya":43},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Minnesota"},{"p":"Survey 160","d":"Oct 27–Nov 1","n":"1,365 LV","r":{"Flanagan":52,"Tafoya":43},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Minnesota"},{"p":"InsiderAdvantage (R)","d":"Oct 29–30","n":"1,200 LV","r":{"Flanagan":49,"Tafoya":46},"u":"https://insideradvantage.com/insideradvantage-final-minnesota-senate-survey-flanagan-49-tafoya-46/"},{"p":"KSTP/SurveyUSA","d":"Oct 24–28","n":"714 LV","r":{"Flanagan":48,"Tafoya":41},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Minnesota"},{"p":"NYT/Siena","d":"Oct 19–26","n":"752 LV","r":{"Flanagan":54,"Tafoya":40},"u":"https://www.nytimes.com/interactive/2026/10/28/polls/times-siena-mn-poll-toplines.html"},{"p":"Victory Insights (R)","d":"Oct 21–22","n":"1,194 LV","r":{"Flanagan":48,"Tafoya":44},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Minnesota"}],"avg":[{"s":"270toWin (avg of 5 polls)","d":"Nov 2","r":{"Flanagan":49.6,"Tafoya":44.0},"u":"https://www.270towin.com/2026-senate-polls/minnesota"},{"s":"FiftyPlusOne","d":"Nov 2","r":{"Flanagan":49.8,"Tafoya":42.6},"u":"https://fiftyplusone.news/polls/senate/general/minnesota"},{"s":"RealClearPolling","d":"Nov 1 (range Oct 2–30)","r":{"Flanagan":48.4,"Tafoya":43.0},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Minnesota"},{"s":"Decision Desk HQ","d":"Nov 2","r":{"Flanagan":49.8,"Tafoya":43.2},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Minnesota"},{"s":"Silver Bulletin","d":"Nov 2","r":{"Flanagan":49.6,"Tafoya":43.0},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Minnesota"}],"note":"Flanagan is the DFL nominee. 270toWin shows Research Co. as 52–47, while Wikipedia shows 48–43; this may be a different version of the poll, which I could not confirm."},"MS":{"polls":[{"p":"Change Research (D)","d":"Oct 21–22","n":"842 LV","r":{"Hyde-Smith":43,"Colom":40,"Pinkins (I)":6},"u":"https://www.politico.com/f/?id=000001a1-6905-d95c-abe7-ffe73ad80000"},{"p":"Data for Progress (D)","d":"Aug 5–15","n":"1,018 LV","r":{"Hyde-Smith":44,"Colom":38,"Pinkins (I)":7},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Mississippi"},{"p":"Impact Research (D)","d":"Apr 8–12","n":"500 LV","r":{"Hyde-Smith":42,"Colom":39,"Pinkins (I)":6},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Mississippi"},{"p":"Impact Research (D)","d":"Jun 18–22, 2025","n":"500 RV","r":{"Hyde-Smith":51,"Colom":38},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Mississippi"}],"avg":[],"note":"All public polls are Democratic-aligned. Independent Ty Pinkins is included in most of them. Without Pinkins: DFP 47–41, Impact (Apr) 47–44. No published average: the 270toWin MS page returned 404, and FiftyPlusOne has no average."},"MT":{"polls":[{"p":"Concord Public Opinion Partners (D)","d":"Oct 22–23","n":"410 LV","r":{"Alme":38,"Bankhead":10,"Bodnar":39,"Austin":2},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Montana"},{"p":"Montana State University Billings","d":"Oct 5–21","n":"720 A","r":{"Alme":30,"Bankhead":21,"Bodnar":26,"Austin":3},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Montana"},{"p":"Quantus Insights (R)","d":"Oct 15–18","n":"667 LV","r":{"Alme":46,"Bankhead":21,"Bodnar":29,"Austin":2},"u":"https://www.270towin.com/2026-senate-polls/montana"},{"p":"Peak Insights (R) (for Alme campaign)","d":"Oct 7–12","n":"500 LV","r":{"Alme":44,"Bankhead":12,"Bodnar":29,"Austin":3},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Montana"},{"p":"Concord Public Opinion Partners (D)","d":"Oct 6–8","n":"405 LV","r":{"Alme":35,"Bankhead":13,"Bodnar":37,"Austin":1},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Montana"},{"p":"American Pulse Research","d":"Sep 19–24","n":"604 LV","r":{"Alme":45,"Bankhead":19,"Bodnar":26,"Austin":3},"u":"https://www.270towin.com/2026-senate-polls/montana"}],"avg":[{"s":"270toWin (avg of 2 polls)","d":"Nov 2","r":{"Alme":45.5,"Bodnar":27.5,"Bankhead":20.0},"u":"https://www.270towin.com/2026-senate-polls/montana"},{"s":"FiftyPlusOne","d":"Nov 2","r":{"Alme":40.1,"Bodnar":32.2,"Bankhead":15.7},"u":"https://fiftyplusone.news/polls/senate/general/montana"},{"s":"Decision Desk HQ","d":"Oct 30","r":{"Alme":37.5,"Bodnar":31.3,"Bankhead":16.1},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Montana"},{"s":"RealClearPolling","d":"Oct 20","r":{"Alme":41.0,"Bodnar":29.0,"Bankhead":18.5},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Montana"},{"s":"Silver Bulletin","d":"Oct 30","r":{"Alme":41.0,"Bodnar":32.6,"Bankhead":16.8},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Montana"}],"note":"Kyle Austin (L) also polled. Quantus figures are its leaners-included version (also 44/21/28 without leaners). MSU Billings is all adults. Wikipedia field dates; 270toWin shows release dates."},"NE":{"polls":[{"p":"Grayhouse","d":"released Nov 2 (field dates not listed)","n":"534 LV","r":{"Ricketts":50,"Osborn":46},"u":"https://www.270towin.com/2026-senate-polls/nebraska"},{"p":"YouGov","d":"Oct 26–29","n":"1,979 LV","r":{"Ricketts":49,"Osborn":49},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Nebraska"},{"p":"National Public Affairs (R)","d":"Oct 25–29","n":"800 LV","r":{"Ricketts":48,"Osborn":45},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Nebraska"},{"p":"NYT/Siena","d":"Oct 23–29","n":"809 LV","r":{"Ricketts":49,"Osborn":43},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Nebraska"},{"p":"GBAO (D)","d":"Oct 18–22","n":"800 LV","r":{"Ricketts":45,"Osborn":46},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Nebraska"},{"p":"Echelon Insights (R) (for NetChoice)","d":"Oct 16–23","n":"407 LV","r":{"Ricketts":47,"Osborn":46},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Nebraska"}],"avg":[{"s":"270toWin (avg of 5 polls)","d":"Nov 2","r":{"Ricketts":47.6,"Osborn":45.0},"u":"https://www.270towin.com/2026-senate-polls/nebraska"},{"s":"FiftyPlusOne","d":"Nov 2","r":{"Ricketts":48.0,"Osborn":46.1},"u":"https://fiftyplusone.news/polls/senate/general/nebraska"},{"s":"Decision Desk HQ","d":"Nov 1","r":{"Ricketts":47.4,"Osborn":46.2},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Nebraska"},{"s":"Silver Bulletin","d":"Nov 2","r":{"Ricketts":47.3,"Osborn":46.4},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Nebraska"}],"note":"NPA also published a head-to-head version (49–48). 270toWin's NYT/Siena figure (46–41) differs from Wikipedia's (49–43), probably a different screen. Grayhouse appears only on 270toWin."},"NH":{"polls":[{"p":"University of New Hampshire","d":"Oct 27–31","n":"2,040 LV","r":{"Pappas":54,"Sununu":42},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_New_Hampshire"},{"p":"National Public Affairs (R)","d":"Oct 25–29","n":"800 LV","r":{"Pappas":51,"Sununu":45},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_New_Hampshire"},{"p":"UMass Lowell","d":"released Oct 29 (field dates not listed)","n":"600 LV","r":{"Pappas":48,"Sununu":41},"u":"https://www.270towin.com/2026-senate-polls/new-hampshire"},{"p":"Rasmussen Reports (R)","d":"Oct 20–23","n":"970 LV","r":{"Pappas":50,"Sununu":44},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_New_Hampshire"},{"p":"Saint Anselm College","d":"Oct 19–20","n":"1,672 LV","r":{"Pappas":50,"Sununu":43},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_New_Hampshire"},{"p":"YouGov","d":"Sep 28–Oct 5","n":"1,520 LV","r":{"Pappas":51,"Sununu":43},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_New_Hampshire"}],"avg":[{"s":"270toWin (avg of 5 polls)","d":"Nov 2","r":{"Pappas":50.6,"Sununu":42.4},"u":"https://www.270towin.com/2026-senate-polls/new-hampshire"},{"s":"FiftyPlusOne","d":"Nov 2","r":{"Pappas":51.4,"Sununu":42.7},"u":"https://fiftyplusone.news/polls/senate/general/new-hampshire"},{"s":"Decision Desk HQ","d":"Oct 22","r":{"Pappas":51.1,"Sununu":43.8},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_New_Hampshire"},{"s":"RealClearPolling","d":"Oct 22","r":{"Pappas":49.5,"Sununu":43.0},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_New_Hampshire"},{"s":"Silver Bulletin","d":"Oct 22","r":{"Pappas":49.6,"Sununu":42.3},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_New_Hampshire"}],"note":"The aggregator figures cited on Wikipedia were last updated Oct 22, so they do not include the latest polls. UMass Lowell appears only on 270toWin."},"NJ":{"polls":[],"avg":[],"note":"no public polls. Wikipedia's race page has no general-election polling table; 270toWin returns 'not_available'; FiftyPlusOne shows no average; searches found no Booker–Murphy head-to-head poll."},"NM":{"polls":[{"p":"Research & Polling Inc. (Albuquerque Journal)","d":"Oct 1–9","n":"1,125 LV","r":{"Luján":53,"Marker":37},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_New_Mexico"},{"p":"SurveyUSA","d":"Sep 25–30","n":"567 LV","r":{"Luján":54,"Marker":36},"u":"https://www.270towin.com/2026-senate-polls/new-mexico"},{"p":"Research & Polling Inc. (Albuquerque Journal)","d":"Aug 21–28","n":"516 LV","r":{"Luján":53,"Marker":38},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_New_Mexico"}],"avg":[{"s":"RealClearPolling","d":"Oct 27","r":{"Luján":53.5,"Marker":37.0},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_New_Mexico"},{"s":"Silver Bulletin","d":"Oct 27","r":{"Luján":54.0,"Marker":36.9},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_New_Mexico"}],"note":"Only 3 polls; the latest ended Oct 9. 270toWin lists the Aug poll (516 LV, 53–38) as 'RMG Research'; Wikipedia credits Research & Polling Inc. 270toWin and FiftyPlusOne show no average."},"NC":{"polls":[{"p":"East Carolina University","d":"Oct 26–29","n":"1,041 LV","r":{"Cooper":54,"Whatley":45},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_North_Carolina"},{"p":"YouGov","d":"Oct 26–29","n":"2,130 LV","r":{"Cooper":55,"Whatley":44},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_North_Carolina"},{"p":"Quantus Insights (R)","d":"Oct 24–25","n":"722 LV","r":{"Cooper":51,"Whatley":43},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_North_Carolina"},{"p":"RedBox Research (D)","d":"Oct 20–23","n":"3,292 LV","r":{"Cooper":50,"Whatley":43},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_North_Carolina"},{"p":"Harper Polling (R) (Carolina Journal)","d":"Oct 18–20","n":"600 LV","r":{"Cooper":49,"Whatley":39},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_North_Carolina"},{"p":"High Point University/YouGov","d":"Oct 1–20","n":"620 LV","r":{"Cooper":54,"Whatley":40},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_North_Carolina"}],"avg":[{"s":"270toWin (avg of 5 polls)","d":"Nov 2","r":{"Cooper":52.8,"Whatley":42.2},"u":"https://www.270towin.com/2026-senate-polls/north-carolina"},{"s":"FiftyPlusOne","d":"Nov 2","r":{"Cooper":53.2,"Whatley":42.8},"u":"https://fiftyplusone.news/polls/senate/general/north-carolina"},{"s":"Decision Desk HQ","d":"Nov 1","r":{"Cooper":52.7,"Whatley":42.6},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_North_Carolina"},{"s":"RealClearPolling","d":"Nov 1","r":{"Cooper":51.8,"Whatley":40.8},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_North_Carolina"},{"s":"Silver Bulletin","d":"Nov 1","r":{"Cooper":52.6,"Whatley":42.6},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_North_Carolina"}],"note":"Quantus and Harper also published other versions (with leaners or head-to-head); the first-listed version is shown. ActiVote (Oct 8–20, 400 LV, 57–43) is left out to keep to 6 polls."},"OH":{"polls":[{"p":"Trafalgar Group (R)","d":"Oct 31–Nov 1","n":"1,092 LV","r":{"Brown":47,"Husted":45},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_special_election_in_Ohio"},{"p":"Research Co.","d":"Oct 30–Nov 1","n":"450 LV","r":{"Brown":45,"Husted":44},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_special_election_in_Ohio"},{"p":"InsiderAdvantage (R)","d":"Oct 29–30","n":"1,200 LV","r":{"Brown":49,"Husted":47},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_special_election_in_Ohio"},{"p":"NYT/Siena","d":"Oct 26–Nov 1","n":"717 LV","r":{"Brown":49,"Husted":44},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_special_election_in_Ohio"},{"p":"YouGov","d":"Oct 26–29","n":"2,090 LV","r":{"Brown":50,"Husted":48},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_special_election_in_Ohio"},{"p":"ActiVote","d":"Oct 18–31","n":"400 LV","r":{"Brown":50,"Husted":50},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_special_election_in_Ohio"}],"avg":[{"s":"270toWin (avg of 7 polls)","d":"Nov 2","r":{"Brown":48.7,"Husted":47.0},"u":"https://www.270towin.com/2026-senate-polls/ohio"},{"s":"FiftyPlusOne","d":"Nov 2","r":{"Brown":48.2,"Husted":45.3},"u":"https://fiftyplusone.news/polls/senate/general/ohio"},{"s":"Decision Desk HQ","d":"Nov 2","r":{"Brown":48.3,"Husted":46.0},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_special_election_in_Ohio"},{"s":"RealClearPolling","d":"Nov 1","r":{"Brown":48.9,"Husted":46.1},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_special_election_in_Ohio"},{"s":"Silver Bulletin","d":"Nov 2","r":{"Brown":48.3,"Husted":45.3},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_special_election_in_Ohio"}],"note":"For Research Co., 270toWin lists 49–48, which looks like a leaners version; Wikipedia's 45–44 is shown here."},"OK":{"polls":[{"p":"CHS & Associates","d":"Aug 3–6","n":"500 RV","r":{"Hern":49,"Thomas":25},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Oklahoma"}],"avg":[],"note":"This is the only public general-election poll found (other candidates 8%, undecided 19%); none in the last 6 weeks. 270toWin lists only a GOP primary poll, and FiftyPlusOne shows no average."},"OR":{"polls":[],"avg":[],"note":"no public polls. Wikipedia's race page has no polling section; 270toWin returns 'not_available'; FiftyPlusOne shows no average; searches found no Merkley–Brock Smith poll."},"RI":{"polls":[{"p":"University of New Hampshire","d":"Oct 27–31, 2026","n":"753 LV","r":{"Reed":63,"McKay":32,"Bahry (I)":3},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/rhode-island"},{"p":"Emerson College / WPRI-TV","d":"Oct 8–11, 2026","n":"800 LV","r":{"Reed":59,"McKay":25,"Bahry (I)":7},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/rhode-island"},{"p":"Embold Research (Pell Center, Salve Regina)","d":"Oct 5–8, 2026","n":"815 LV","r":{"Reed":55,"McKay":32,"Bahry (I)":4},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/rhode-island"},{"p":"University of New Hampshire","d":"Sep 17–21, 2026","n":"595 LV (270toWin lists 598 LV)","r":{"Reed":53,"McKay":33,"Bahry (I)":5},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/rhode-island"},{"p":"University of New Hampshire","d":"Aug 20–24, 2026","n":"750 LV","r":{"Reed":51,"McKay":31},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Rhode_Island"}],"avg":[{"s":"270toWin (avg of 3 polls)","d":"no date shown; accessed Nov 2, 2026","r":{"Reed":59.0,"McKay":29.7},"u":"https://www.270towin.com/2026-senate-polls/rhode-island"},{"s":"PollCheck","d":"Nov 2, 2026","r":{"Reed":58.1,"McKay":30.3,"Bahry":4.7},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/rhode-island"}],"note":"Independent Michael Bahry also on ballot per PollCheck. Wikipedia polling table not updated past August."},"SC":{"polls":[{"p":"Patinkin Research Strategies (for Project V.O.T.E.)","d":"Oct 27–29, 2026","n":"500 LV","r":{"Graham":43,"Andrews":48},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/south-carolina"},{"p":"New York Times / Siena","d":"Oct 19–26, 2026","n":"707 LV","r":{"Graham":48,"Andrews":48},"u":"https://newsweek.com/darline-graham-hit-with-troubling-poll-one-day-before-trump-rally-12632372"},{"p":"Targoz Market Research (for SC Policy Council)","d":"Oct 16–25, 2026","n":"895 LV","r":{"Graham":47,"Andrews":46},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/south-carolina"},{"p":"The Citadel","d":"Oct 14–25, 2026","n":"890 LV","r":{"Graham":43,"Andrews":39},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/south-carolina"},{"p":"East Carolina University","d":"Oct 19–24, 2026","n":"955 LV","r":{"Graham":51,"Andrews":47},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/south-carolina"},{"p":"Impact Research (D; for Fresh Start SC super PAC)","d":"Oct 15–21, 2026","n":"800 LV","r":{"Graham":44,"Andrews":45},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/south-carolina"}],"avg":[{"s":"270toWin","d":"no date shown; accessed Nov 2, 2026 (latest poll in list Oct 18)","r":{"Graham":47.5,"Andrews":45.5},"u":"https://www.270towin.com/2026-senate-polls/south-carolina"},{"s":"FiftyPlusOne","d":"no date shown; accessed Nov 2, 2026","r":{"Graham":46.0,"Andrews":45.6},"u":"https://www.fiftyplusone.news/averages"},{"s":"PollCheck","d":"Nov 1, 2026","r":{"Graham":46.7,"Andrews":45.2},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/south-carolina"}],"note":"Darline Graham was appointed after Lindsey Graham's death (Jul 11) and won GOP nomination (Newsweek). Citadel RV version: Graham 35, Andrews 40 (1,009 RV). Libertarian Kasie Whitener and Constitution Mark Hackett also on ballot. RCP page failed to load."},"SD":{"polls":[{"p":"Concord Public Opinion Partners","d":"Oct 22–26, 2026","n":"448 LV","r":{"Rounds":41,"Bengs":43},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/south-dakota"},{"p":"Emerson College","d":"Oct 19–20, 2026","n":"803 LV","r":{"Rounds":50,"Bengs":42},"u":"https://www.270towin.com/2026-senate-polls/south-dakota"},{"p":"Quantus Insights","d":"Oct 17–19, 2026","n":"633 LV (270toWin lists 657 LV)","r":{"Rounds":59,"Bengs":37},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/south-dakota"},{"p":"Public Opinion Strategies","d":"Oct 12–16, 2026","n":"500 LV","r":{"Rounds":54,"Bengs":37},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/south-dakota"},{"p":"Mason-Dixon Polling & Strategy","d":"Oct 12–14, 2026","n":"500 RV","r":{"Rounds":56,"Bengs":37},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/south-dakota"},{"p":"Concord Public Opinion Partners","d":"Oct 6–8, 2026","n":"400 LV","r":{"Rounds":42,"Bengs":43},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/south-dakota"}],"avg":[{"s":"270toWin (avg of 2 polls)","d":"no date shown; accessed Nov 2, 2026","r":{"Rounds":54.5,"Bengs":39.5},"u":"https://www.270towin.com/2026-senate-polls/south-dakota"},{"s":"FiftyPlusOne","d":"no date shown; accessed Nov 2, 2026","r":{"Rounds":51.4,"Bengs":41.3},"u":"https://www.fiftyplusone.news/averages"},{"s":"PollCheck","d":"Nov 2, 2026","r":{"Rounds":51.8,"Bengs":40.8},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/south-dakota"},{"s":"Silver Bulletin","d":"updated Oct 6, 2026 (polls through Sep 27)","r":{"Rounds":51.0,"Bengs":43.5},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_South_Dakota"}],"note":"Pollster partisanship not shown on PollCheck for Oct polls; Wikipedia tags earlier polls (PPP, Lake, Impact = D; POS = R). Quantus sample size differs between sources."},"TN":{"polls":[{"p":"Targoz Market Research / Beacon Center (TennSight)","d":"Aug 15–26, 2026","n":"1,157 RV","r":{"Hagerty":51,"Bradshaw":31},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Tennessee"},{"p":"Beacon Center poll (likely-voter figures as published by Beacon)","d":"field dates not stated; published Sep 3, 2026","n":"1,200 voters statewide; Senate figure among LV","r":{"Hagerty":58,"Bradshaw":33},"u":"https://www.beacontn.org/august-2026-beacon-poll-results/"}],"avg":[{"s":"USPollingData","d":"page updated Nov 2, 2026","r":{"Hagerty":51.0,"Bradshaw":31.0},"u":"https://uspollingdata.com/races/senate/tennessee/"}],"note":"Only one public poll (Beacon/Targoz, Aug 2026); no polls in last ~6 weeks found. The two rows are likely the same survey reported as RV (51-31; 270toWin lists 1,200 RV, 9/02) vs LV (58-33). A Cygnal 56-36 poll that appears in searches is from 2020, not 2026."},"TX":{"polls":[{"p":"NYT / Siena","d":"Oct 27–Nov 1, 2026","n":"1,215 LV","r":{"Paxton":43,"Talarico":50},"u":"https://texaspolitics.utexas.edu/blog/texas-2026-u-s-senate-poll-tracker"},{"p":"Kreate Strategies","d":"Oct 27–30, 2026","n":"900 LV","r":{"Paxton":45,"Talarico":48,"Brown (L)":0},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/texas"},{"p":"YouGov","d":"Oct 26–29, 2026","n":"2,141 LV","r":{"Paxton":47,"Talarico":51},"u":"https://texaspolitics.utexas.edu/blog/texas-2026-u-s-senate-poll-tracker"},{"p":"Quantus Insights","d":"Oct 26–28, 2026","n":"1,221 LV","r":{"Paxton":48.7,"Talarico":47.6},"u":"https://www.fox26houston.com/news/paxton-slips-past-talarico-latest-poll-senate-race-enters-final-days"},{"p":"ActiVote","d":"Oct 22–28, 2026","n":"400 LV","r":{"Paxton":48,"Talarico":52},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/texas"},{"p":"CNN / SSRS","d":"Oct 20–27, 2026","n":"923 LV","r":{"Paxton":43,"Talarico":49},"u":"https://texaspolitics.utexas.edu/blog/texas-2026-u-s-senate-poll-tracker"}],"avg":[{"s":"RealClearPolling","d":"no date shown; accessed Nov 2, 2026","r":{"Paxton":45.4,"Talarico":48.2},"u":"https://www.realclearpolling.com/polls/senate/general/2026/texas/paxton-vs-talarico"},{"s":"270toWin (avg of 9 polls)","d":"no date shown; accessed Nov 2, 2026 (latest poll in list Oct 23)","r":{"Paxton":47.3,"Talarico":49.3},"u":"https://www.270towin.com/2026-senate-polls/texas"},{"s":"FiftyPlusOne","d":"no date shown; accessed Nov 2, 2026","r":{"Paxton":45.7,"Talarico":49.5},"u":"https://www.fiftyplusone.news/averages"},{"s":"PollCheck","d":"Nov 1, 2026","r":{"Paxton":45.7,"Talarico":48.5,"Brown":2.4},"u":"https://www.pollcheck.co.uk/us-midterms-2026/senate/texas"}],"note":"Libertarian Ted Brown also on ballot. Other late polls: A2 Insights Oct 23–27 631 LV P47/T50; Data for Progress Oct 23–26 712 LV P45/T49; TSU Oct 21–25 2,000 LV P47/T49 (sources: PollCheck, UT tracker). PollCheck rounds Quantus to 49/48. Wikipedia race page has no general-election table."},"VA":{"polls":[{"p":"The Public Sentiment Institute","d":"Jun 12–16, 2026","n":"996 LV","r":{"Warner":51,"Mizusawa":33},"u":"https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Virginia"},{"p":"The Public Sentiment Institute / Virginia Project (R)","d":"May 1–5, 2026","n":"1,047 LV","r":{"Warner":55,"Mizusawa":29},"u":"https://www.270towin.com/2026-senate-polls/virginia"}],"avg":[{"s":"USPollingData","d":"as of Jun 16, 2026","r":{"Warner":48.0,"Mizusawa":32.0,"Moran":4.0},"u":"https://uspollingdata.com/races/senate/virginia/"}],"note":"No polls found in last ~6 weeks; latest is June. USPollingData lists the June PSI poll as RV 48-32 and LV 50-33 (Moran 4/3), conflicting with Wikipedia's 996 LV 51-33. 270toWin shows no average."},"WV":{"polls":[],"avg":[],"note":"no public polls (Wikipedia race page, searches; Capito v Fetty Anderson; Constitution's S. Marshall Wilson also on ballot). An Emerson WV Senate poll in search results is Manchin v Morrisey from 2024, not this race."},"WY":{"polls":[],"avg":[],"note":"no public polls (Wikipedia race page and searches found no Hageman v Byrd general-election polling)."}},"gov":{"polls":[{"p":"Research Co.","d":"Oct 30 - Nov 1, 2026","n":"450 LV (online; MoE +/-4.6)","r":{"Hochul":55,"Blakeman":45},"u":"https://researchco.ca/2026/11/01/midterms-2026-one/"},{"p":"Marist (NY statewide)","d":"Oct 22-25, 2026","n":"1,448 RV; LV subset size not given (LV MoE +/-3.9)","r":{"Hochul":53,"Blakeman":42,"Undecided":4},"u":"https://maristpoll.marist.edu/polls/the-midterm-elections-in-new-york-october-2026/"},{"p":"ActiVote","d":"Oct 1-23, 2026","n":"400 LV","r":{"Hochul":59,"Blakeman":41},"u":"https://www.activote.net/polls/2026/ny-governor/2026-10-23/"},{"p":"Siena College","d":"Oct 19-22, 2026","n":"807 LV (MoE +/-4.1)","r":{"Hochul":54,"Blakeman":40,"Undecided":6},"u":"https://www.cityandstateny.com/politics/2026/10/new-siena-poll-has-hochul-14-points-over-blakeman-days-election/416857/"},{"p":"Quinnipiac University","d":"Oct 15-19, 2026","n":"1,167 LV (MoE +/-3.8)","r":{"Hochul":55,"Blakeman":41,"Undecided":2,"Refused":2},"u":"https://poll.qu.edu/poll-release?releaseid=3972"},{"p":"OnMessage Inc. (R; sponsored by the Komatireddy AG campaign)","d":"Oct 1-6, 2026","n":"1,000 LV","r":{"Hochul":50,"Blakeman":46},"u":"https://www.pollcheck.co.uk/us-midterms-2026/governor/new-york"},{"p":"Beacon Research (D)","d":"Oct 1-6, 2026","n":"820 RV","r":{"Hochul":53,"Blakeman":31,"Undecided":16},"u":"https://www.270towin.com/2026-governor-polls/new-york"},{"p":"Emerson College / PIX11","d":"Oct 3-5, 2026","n":"900 LV (MoE +/-3.3)","r":{"Hochul":52,"Blakeman":40,"Undecided":8},"u":"https://www.270towin.com/2026-governor-polls/new-york"}],"avg":[{"s":"PollCheck","d":"updated Nov 2, 2026","r":{"Hochul":53.1,"Blakeman":41.2},"u":"https://www.pollcheck.co.uk/us-midterms-2026/governor/new-york"},{"s":"FiftyPlusOne","d":"labeled Nov 2, 2026 (calculation date not stated)","r":{"Hochul":53.7,"Blakeman":41.4},"u":"https://fiftyplusone.news/polls/governor/general/new-york"},{"s":"270toWin","d":"viewed Nov 2, 2026; average of the 5 most recent polls listed (dated 10/06-10/21), so it does not include Siena, Marist late-Oct, or Research Co.","r":{"Hochul":52.2,"Blakeman":39.0},"u":"https://www.270towin.com/2026-governor-polls/new-york"},{"s":"RealClearPolling","d":"viewed Nov 2, 2026; covers polls 9/11-10/19 (stale)","r":{"Hochul":52.5,"Blakeman":41.0},"u":"https://www.realclearpolling.com/polls/governor/general/2026/new-york/hochul-vs-blakeman"}]},"generic":{"polls":[{"p":"Big Data Poll (R) / Public Polling Project","d":"Oct 27-30, 2026","n":"3,214 LV per PollCheck; DDHQ lists 3,418 RV","r":{"Dem":52.3,"Rep":40.0},"u":"https://www.pollcheck.co.uk/us-midterms-2026/generic-ballot"},{"p":"NBC News","d":"ending Oct 30, 2026","n":"1,000 RV","r":{"Dem":52,"Rep":45},"u":"https://www.pollcheck.co.uk/us-midterms-2026/generic-ballot"},{"p":"Ipsos","d":"ending Oct 28, 2026","n":"1,209 LV","r":{"Dem":50,"Rep":44},"u":"https://www.pollcheck.co.uk/us-midterms-2026/generic-ballot"},{"p":"Tufts University / YouGov","d":"ending Oct 27, 2026","n":"499 LV","r":{"Dem":52,"Rep":40},"u":"https://www.pollcheck.co.uk/us-midterms-2026/generic-ballot"},{"p":"Emerson College","d":"ending Oct 26, 2026","n":"1,000 LV","r":{"Dem":52,"Rep":42},"u":"https://www.pollcheck.co.uk/us-midterms-2026/generic-ballot"},{"p":"Economist / YouGov","d":"Oct 23-26, 2026","n":"sample sizes not shown on page (PollCheck: 1,430 RV; 1,123 LV strict)","r":{"Dem":52,"Rep":41},"u":"https://yougov.com/en-us/articles/55848-democrats-lead-2026-congressional-election-a-week-before-election-day-october-23-26-2026-economist-yougov-poll"},{"p":"Reuters / Ipsos","d":"Oct 22-26, 2026","n":"1,679 adults total; LV figures shown (LV n not reported by Ipsos; PollCheck lists 1,164 LV)","r":{"Dem":53,"Rep":44},"u":"https://www.ipsos.com/en-us/democrats-hold-9-point-edge-midterm-congressional-ballot"},{"p":"NPR / PBS News / Marist","d":"Oct 19-20, 2026 (per Marist page; RCP lists 10/22-10/25)","n":"1,289 RV; LV n not stated (LV MoE +/-3.8)","r":{"Dem":52,"Rep":44},"u":"https://maristpoll.marist.edu/polls/u-s-midterm-elections-october-2026/"}],"avg":[{"s":"PollCheck","d":"Nov 1, 2026","r":{"Dem":50.7,"Rep":42.6},"u":"https://www.pollcheck.co.uk/us-midterms-2026/generic-ballot"},{"s":"Decision Desk HQ","d":"Oct 30, 2026","r":{"Dem":51.2,"Rep":42.3},"u":"https://votes.decisiondeskhq.com/polls/generic-ballot/national/lv-rv-adults"},{"s":"RealClearPolling","d":"viewed Nov 2, 2026; covers polls 10/9-10/26","r":{"Dem":51.6,"Rep":43.4},"u":"https://www.realclearpolling.com/polls/state-of-the-union/generic-congressional-vote"}]},"local":{"lh:17":{"polls":[{"p":"RedBox Research (D; A Fight Worth Having super PAC)","d":"Oct 20-23, 2026","n":"726 LV (MoE +/-4.5)","r":{"Conley":48,"Lawler":46,"Other/undecided":6},"u":"https://afightworthhaving.com/polling/2026/ny-17"},{"p":"McLaughlin & Associates (R; Lawler campaign)","d":"Sep 28-30, 2026","n":"400 LV (MoE +/-4.9)","r":{"Lawler":50,"Conley":47,"Undecided":3},"u":"https://en.wikipedia.org/wiki/2026_United_States_House_of_Representatives_elections_in_New_York"},{"p":"Emerson College / PIX11","d":"Sep 27-29, 2026","n":"400 LV (MoE +/-4.9)","r":{"Conley":48,"Lawler":46,"Undecided":7},"u":"https://emersoncollegepolling.com/ny-17-2026-poll/"},{"p":"co/efficient (R)","d":"Jul 20-22, 2026","n":"1,292 LV","r":{"Lawler":50,"Conley":45},"u":"https://www.270towin.com/2026-house-polls/new-york/district-17"},{"p":"FM3 Research (D; House Majority PAC)","d":"Jun 27 - Jul 1, 2026","n":"509 LV","r":{"Conley":51,"Lawler":45},"u":"https://caitconley.com/ny-17-poll-cait-conley-leads-mike-lawler-51-to-45/"}],"avg":[],"note":"All five polls are within about 6 points. Three of the five were sponsored by a party or a campaign."},"lh:18":{"polls":[{"p":"Public Policy Polling (D)","d":"Sep 29-30, 2026","n":"561 LV","r":{"Ryan":52,"Auringer":35,"Undecided":13},"u":"https://en.wikipedia.org/wiki/2026_United_States_House_of_Representatives_elections_in_New_York"},{"p":"Global Strategy Group (D; Ryan campaign)","d":"Jul 23-26, 2026","n":"500 LV (MoE +/-4.4)","r":{"Ryan":53,"Auringer":39,"Undecided":8},"u":"https://en.wikipedia.org/wiki/2026_United_States_House_of_Representatives_elections_in_New_York"}],"avg":[],"note":"Both public NY-18 polls were Democratic-sponsored, and I could not check either against its original release."}}}/*ENDPOLLS*/;
+const REGIONS={orange:["Orange County","Hudson Valley"],bronx:["Bronx","Bronx County"],manhattan:["Manhattan","New York County"],queens:["Queens","Queens County"],si:["Staten Island","Richmond County"],brooklyn:["Brooklyn","Kings County"]};
+const W="https://en.wikipedia.org/wiki/2026_United_States_House_of_Representatives_elections_in_New_York#District_";
+const BPS="https://ballotpedia.org/New_York_State_Senate_elections,_2026";
+const BPA="https://ballotpedia.org/New_York_State_Assembly_District_";
+// Local race: [id, region, holder now, tag, holder name, [[name, party, lines]], url, note]
+const LOCAL={
+ lh:{tab:"US House",title:"US House",prefix:"NY-",races:[
+  ["18","orange","D","","Pat Ryan",[["Pat Ryan","D","D, WFP"],["Jackie Auringer","R","R, Conservative"]],W+"18"],
+  ["14","bronx","D","","Alexandria Ocasio-Cortez",[["Alexandria Ocasio-Cortez","D","D, WFP"],["Diamant Hysenaj","R","R, Conservative"]],W+"14"],
+  ["15","bronx","D","","Ritchie Torres",[["Ritchie Torres","D","D"],["Stylo Sapaskis","R","R"],["Gonzalo Duran","C","Conservative"],["Andre Easton","O","Party for Socialism and Liberation"],["Jose Vega","O","Speak The Truth"]],W+"15"],
+  ["16","bronx","D","","George Latimer",[["George Latimer","D","D"],["Joseph Cinquemani","R","R"]],W+"16"],
+  ["10","manhattan","D","new rep","Dan Goldman",[["Brad Lander","D","D, WFP"],["Jennifer Moore","R","R, Conservative"]],W+"10","Goldman lost the June primary to Lander."],
+  ["12","manhattan","D","open","Jerry Nadler",[["Micah Lasher","D","D"],["Caroline Shinkle","R","R, Conservative"],["Wilneida Negron","I","For All of Us"],["Karen Ortiz","I","Independent line"]],W+"12","Nadler is retiring."],
+  ["13","manhattan","D","new rep","Adriano Espaillat",[["Darializa Avila Chevalier","D","D, WFP"],["Jomo Williams","R","R"]],W+"13","Espaillat lost the June primary."],
+  ["3","queens","D","","Tom Suozzi",[["Tom Suozzi","D","D"],["Mike LiPetri","R","R, Conservative"]],W+"3"],
+  ["5","queens","D","","Gregory Meeks",[["Gregory Meeks","D","D"],["George Marsh","R","R, Queens United"]],W+"5"],
+  ["6","queens","D","","Grace Meng",[["Grace Meng","D","D"],["Joseph Chou","R","R, Conservative"]],W+"6"],
+  ["11","si","R","","Nicole Malliotakis",[["Nicole Malliotakis","R","R, Conservative"],["Michael DeCillis","D","D"]],W+"11"],
+  ["7","brooklyn","D","open","Nydia Velázquez",[["Claire Valdez","D","D, WFP"],["Melvin Rivera","R","R, Conservative"],["Priscilla Ghaznavi","O","Our Future"]],W+"7","Velázquez is retiring."],
+  ["8","brooklyn","D","","Hakeem Jeffries",[["Hakeem Jeffries","D","D"],["Lewis Mizrahi","R","R, Conservative"]],W+"8"],
+  ["9","brooklyn","D","","Yvette Clarke",[["Yvette Clarke","D","D"],["Joel Anabilah-Azumah","R","R, Conservative"]],W+"9"]
+ ],notes:{orange:"NY-18 covers Orange County.",bronx:"NY-14 also takes in part of Queens. NY-16 is mostly Westchester.",manhattan:"NY-10 also covers part of Brooklyn. NY-13 also covers part of the Bronx.",queens:"NY-3 is mostly Nassau County; its Queens piece is the northeast corner.",si:"NY-11 also covers part of southern Brooklyn. Lines stay as-is after the Supreme Court's March ruling.",brooklyn:"NY-7 also covers part of western Queens."},
+ footer:"Open: incumbent retiring (NY-7, NY-12). New rep: incumbent lost the June primary (NY-10, NY-13)."},
+ ls:{tab:"State Senate",title:"State Senate",prefix:"SD ",races:[
+  ["39","orange","R","","Rob Rolison",[["Rob Rolison","R","R, Conservative"],["Lisa Kaul","D","D, WFP"]],"https://elections.dutchessny.gov/wp-content/uploads/2026/09/Candidate-Notice-Website-1.pdf"],
+  ["42","orange","D","","James Skoufis",[["James Skoufis","D","D, WFP"],["Jennifer R. Figueroa","R","R"],["Joshua Blumenthal","C","Conservative"]],BPS],
+  ["29","bronx","D","","José M. Serrano",[["José M. Serrano","D","D, WFP"]],BPS],
+  ["32","bronx","D","","Luis R. Sepúlveda",[["Luis R. Sepúlveda","D","D"]],BPS],
+  ["33","bronx","D","","Gustavo Rivera",[["Gustavo Rivera","D","D, WFP"]],BPS],
+  ["34","bronx","D","","Nathalia Fernandez",[["Nathalia Fernandez","D","D, WFP"],["Adrian Romero","C","Conservative"]],BPS],
+  ["36","bronx","D","","Jamaal Bailey",[["Jamaal Bailey","D","D"],["Grace Marrero","C","Conservative"]],BPS],
+  ["27","manhattan","D","open","Brian Kavanagh",[["Grace Lee","D","D, WFP"],["Jason C. Murillo","R","R, Conservative"]],BPS,"Kavanagh is retiring."],
+  ["28","manhattan","D","","Liz Krueger",[["Liz Krueger","D","D"],["Alina Bonsell","R","R, Block Mamdani"]],BPS],
+  ["30","manhattan","D","","Cordell Cleare",[["Cordell Cleare","D","D, WFP"]],BPS],
+  ["31","manhattan","D","","Robert Jackson",[["Robert Jackson","D","D, WFP"]],BPS],
+  ["47","manhattan","D","","Erik Bottcher",[["Erik Bottcher","D","D, WFP"],["Charlotte Friedman","R","R"]],BPS],
+  ["10","queens","D","","James Sanders Jr.",[["James Sanders Jr.","D","D, WFP"]],BPS],
+  ["11","queens","D","","Toby Ann Stavisky",[["Toby Ann Stavisky","D","D"],["Pamela H. Michos","R","R, Conservative"]],BPS],
+  ["12","queens","D","vacant","Vacant (was Michael Gianaris)",[["Aber Kawas","D","D"],["Han-Khon To","R","R"]],BPS,"Vacant since Gianaris resigned in August."],
+  ["13","queens","D","new","Jessica Ramos",[["Jessica González-Rojas","D","D, WFP"],["John Patrick Healy","R","R"]],BPS,"Ramos lost renomination."],
+  ["14","queens","D","","Leroy Comrie",[["Leroy Comrie","D","D"]],BPS],
+  ["15","queens","D","","Joseph Addabbo Jr.",[["Joseph Addabbo Jr.","D","D"],["Danniel S. Maio","C","Conservative"]],BPS],
+  ["16","queens","D","","John Liu",[["John Liu","D","D, WFP"]],BPS],
+  ["59","queens","D","","Kristen Gonzalez",[["Kristen Gonzalez","D","D, WFP"]],BPS],
+  ["23","si","D","","Jessica Scarcella-Spanton",[["Jessica Scarcella-Spanton","D","D, Affordable & Safe"],["Ruslan Shamal","R","R, Conservative"]],BPS],
+  ["24","si","R","","Andrew Lanza",[["Andrew Lanza","R","R, Conservative"],["Alexis Rodriguez","D","D"]],BPS],
+  ["17","brooklyn","R","","Steve Chan",[["Steve Chan","R","R, Conservative, Stop Mamdani"],["Larry He","D","D"]],BPS],
+  ["18","brooklyn","D","","Julia Salazar",[["Julia Salazar","D","D, WFP"]],BPS],
+  ["19","brooklyn","D","","Roxanne Persaud",[["Roxanne Persaud","D","D"]],BPS],
+  ["20","brooklyn","D","","Zellnor Myrie",[["Zellnor Myrie","D","D, WFP"]],BPS],
+  ["21","brooklyn","D","","Kevin Parker",[["Kevin Parker","D","D"],["Ronald Seifert","R","R, Conservative"]],BPS],
+  ["22","brooklyn","D","","Sam Sutton",[["Sam Sutton","D","D"],["Nachman Carl Caller","R","R, Conservative"]],BPS],
+  ["25","brooklyn","D","","Jabari Brisport",[["Jabari Brisport","D","D, WFP"]],BPS],
+  ["26","brooklyn","D","","Andrew Gounardes",[["Andrew Gounardes","D","D, WFP"],["Tom Stanten","R","R, Conservative"]],BPS]
+ ],notes:{orange:"SD 42 covers nearly all of Orange. SD 39 adds parts of Orange to Dutchess and Putnam.",bronx:"SD 29 also reaches into upper Manhattan.",queens:"SD 59 spans Queens, Brooklyn and Manhattan.",si:"SD 23 also covers part of southern Brooklyn.",brooklyn:"SD 19 includes a small piece of Queens."},
+ footer:"13 of these 30 races have one candidate, and 3 more face only a Conservative. The full Senate has 63 seats."},
+ la:{tab:"Assembly",title:"Assembly · Orange County",prefix:"AD ",solo:true,races:[
+  ["98","orange","R","","Karl Brabenec",[["Karl Brabenec","R","R, Conservative"]],BPA+"98"],
+  ["99","orange","D","","Chris Eachus",[["Chris Eachus","D","D, WFP"],["Rich Vargus","R","R, Conservative"]],BPA+"99"],
+  ["100","orange","D","","Paula Kay",[["Paula Kay","D","D, People Over Politics"]],BPA+"100"],
+  ["101","orange","R","","Brian Maher",[["Brian Maher","R","R, Conservative"]],BPA+"101"],
+  ["104","orange","D","","Jonathan Jacobson",[["Jonathan Jacobson","D","D, WFP"]],BPA+"104","The Republican filer didn't qualify."]
+ ],notes:{orange:"AD 99 runs from Cornwall, New Windsor and Highlands into Rockland's Stony Point. AD 100 is mostly Sullivan County. AD 101 stretches across several counties. AD 104 includes Newburgh plus parts of Dutchess and Ulster."},
+ footer:"Every Assembly district that touches Orange County. Only AD 99 is contested."},
+ lg:{tab:"Governor",title:"Governor by county",prefix:"",gov:true,dLabel:"Hochul",rLabel:"Blakeman",races:[
+  ["Orange","orange"],["Bronx","bronx"],["Manhattan","manhattan"],["Queens","queens"],["Staten Is.","si"],["Brooklyn","brooklyn"]],
+  cands:[["Kathy Hochul","D","D, WFP · running mate Adrienne Adams"],["Bruce Blakeman","R","R, Conservative, Vote Affordable · running mate Todd Hood"]],
+  url:"https://en.wikipedia.org/wiki/2026_New_York_gubernatorial_election",
+  notes:{},footer:"The statewide vote decides the race, so county picks show where each candidate wins, not who wins. Minor-party petitions were rejected, so the ballot has two candidates."}
+};
+
+/* ===================== STATE ===================== */
+const KEY="midterm-map-2026-v2";
+const NSLOTS=11;
+const blankPicks=()=>({sen:{},house:{},lh:{},ls:{},la:{},lg:{}});
+let S={scope:"nat",nat:"senate",loc:"lh",layers:{held:true,ballot:true,polls:true},active:0,
+  profiles:Array.from({length:NSLOTS},(_,i)=>({name:i?"":"Main",p:blankPicks()}))};
+let sel=null;
+const PK=["D","R","I","T"];
+function cleanPicks(p){const o=blankPicks();if(!p||typeof p!=="object")return o;
+  if(p.sen)for(const s in SEN_UP)if(PK.includes(p.sen[s])&&p.sen[s]!=="T")o.sen[s]=p.sen[s];
+  if(p.house)for(const s in SEATS){const h=p.house[s];if(h&&typeof h==="object"){const D=Math.max(0,h.D|0),R=Math.max(0,h.R|0),I=Math.max(0,h.I|0);if(D+R+I&&D+R+I<=SEATS[s])o.house[s]={D,R,I}}}
+  for(const v of ["lh","ls","la","lg"])if(p[v])for(const r of LOCAL[v].races){const x=p[v][r[0]];if(PK.includes(x)&&x!=="T")o[v][r[0]]=x}
+  return o}
+try{const raw=JSON.parse(localStorage.getItem(KEY)||"null");
+  if(raw&&Array.isArray(raw.profiles)){
+    S.profiles=S.profiles.map((d,i)=>{const q=raw.profiles[i];return q?{name:String(q.name||d.name).slice(0,24),p:cleanPicks(q.p)}:d});
+    if(raw.scope==="loc"||raw.scope==="nat")S.scope=raw.scope;
+    if(raw.nat==="house"||raw.nat==="senate")S.nat=raw.nat;
+    if(LOCAL[raw.loc])S.loc=raw.loc;
+    if(raw.layers)S.layers={held:raw.layers.held!==false,ballot:raw.layers.ballot!==false,polls:raw.layers.polls!==false};
+    if(raw.active>=0&&raw.active<NSLOTS)S.active=raw.active|0;
+  }else{ // carry over picks saved by the first version of this page
+    const old=JSON.parse(localStorage.getItem("midterm-map-2026-v1")||"null");
+    if(old){const p=blankPicks();if(old.sen)p.sen=old.sen;if(old.house)for(const s in old.house){const h=old.house[s];
+      p.house[s]=Array.isArray(h)?{D:h.filter(x=>x==="D").length,R:h.filter(x=>x==="R").length,I:h.filter(x=>x==="I").length}:h}
+      S.profiles[0].p=cleanPicks(p)}}
+}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}schedulePush()}
+const P=()=>S.profiles[S.active].p;
+const slotLabel=i=>i===0?`Main${S.profiles[0].name&&S.profiles[0].name!=="Main"?" · "+S.profiles[0].name:""}`:(S.profiles[i].name||`Player ${i}`);
+
+/* ===================== LIVE (Claude link only) ===================== */
+const live={on:false,db:null,user:null,owner:false,uid:null,mainLocked:false,board:[],postedSlot:null,status:""};
+try{const ps=JSON.parse(localStorage.getItem(KEY+"-posted")||"null");if(ps!==null)live.postedSlot=ps}catch(e){}
+function editable(){return !(S.active===0&&live.mainLocked)}
+let pushT=null,pushing=false;
+function schedulePush(){if(!live.on)return;clearTimeout(pushT);pushT=setTimeout(pushNow,1500)}
+async function pushNow(){
+  if(!live.on||pushing)return;pushing=true;
+  try{
+    if(live.owner)await live.db.doc("board/main").set({name:S.profiles[0].name||"Main",p:S.profiles[0].p,at:new Date().toISOString()});
+    if(!live.owner&&live.uid&&live.postedSlot!==null){const pr=S.profiles[live.postedSlot];
+      await live.db.doc("picks/"+live.uid).set({name:(pr.name||`Player ${live.postedSlot}`).slice(0,24),p:pr.p,at:new Date().toISOString()})}
+  }catch(e){if(e&&e.code==="invalid_argument"){live.status="Your access level can't save to the live board.";renderShare()}}
+  pushing=false;
+}
+(async()=>{
+  if(!window.claude||typeof window.claude.use!=="function")return;
+  const [db,user]=await Promise.all([claude.use("db"),claude.use("user")]);
+  if(!db)return;
+  live.db=db;live.user=user;live.on=true;
+  live.owner=user?await user.isOwner():false;
+  live.uid=user?await user.id():null;
+  db.doc("board/main").onSnapshot(snap=>{
+    if(live.owner)return;
+    if(snap.exists){const d=snap.data();S.profiles[0]={name:String(d.name||"Main").slice(0,24),p:cleanPicks(d.p)};live.mainLocked=true;render()}
+  },()=>{});
+  db.collection("picks").onSnapshot(q=>{
+    live.board=q.docs.filter(d=>d.exists).map(d=>{const x=d.data();return {id:d.id,name:String(x.name||"Someone").slice(0,24),p:cleanPicks(x.p),at:x.at||""}});
+    renderCompare();
+  },()=>{});
+  if(live.owner)schedulePush();
+  render();
+})();
+
+/* ===================== HELPERS ===================== */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pcls=p=>p==="D"||p==="R"||p==="I"?p:"O";
+const PLONG={D:"Democrat",R:"Republican",I:"Independent",T:"Toss-up"};
+const PLABEL={D:"D",R:"R",I:"I",L:"Lib",G:"Grn",C:"Con",O:"Oth"};
+let toastT;function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("on"),2000)}
+const lastName=n=>{const w=n.replace(/\(.*?\)/g,"").trim().split(/\s+/).filter(x=>!/^(Jr\.?|Sr\.?|II|III|IV)$/.test(x));return w[w.length-1]||n};
+const cyc=(v,withI)=>({T:"D",D:"R",R:withI?"I":"T",I:"T"})[v||"T"];
+const hTot=s=>{const h=P().house[s];return h?h.D+h.R+h.I:0};
+const hGet=s=>P().house[s]||{D:0,R:0,I:0};
+function hSet(s,o){if(o.D+o.R+o.I===0)delete P().house[s];else P().house[s]=o}
+function guard(){if(editable())return true;toast("Main is the owner's map. Pick your own slot to make changes.");return false}
+function candList(list){return `<ul class="cands">${list.map(([n,p,l])=>`<li class="cand"><span class="badge ${pcls(p)}">${PLABEL[p]||p}</span><span>${esc(n)}</span>${l?`<span class="ln">${esc(l)}</span>`:""}</li>`).join("")}</ul>`}
+function segHTML(cur){return `<div class="seg">${["D","R","I","T"].map(p=>`<button class="${p}" data-p="${p}" aria-pressed="${(cur||"T")===p}">${p==="T"?"Toss-up":p==="I"?"Ind./other":PLONG[p]}</button>`).join("")}</div>`}
+
+/* ===================== POLLS ===================== */
+const GENERIC_C=[["Democrats","D"],["Republicans","R"]];
+function partyIn(cands,key){const k=String(key).toLowerCase();
+  const c=(cands||[]).find(c=>c[0].toLowerCase().includes(k)||k.includes(lastName(c[0]).toLowerCase()));
+  return c?c[1]:(/^dem/i.test(key)?"D":/^rep|^gop/i.test(key)?"R":/undecided|other/i.test(key)?"X":"O")}
+function ownAvg(polls){const sum={},cnt={};for(const p of polls)for(const k in p.r){const v=+p.r[k];if(isFinite(v)){sum[k]=(sum[k]||0)+v;cnt[k]=(cnt[k]||0)+1}}
+  const r={},need=Math.max(1,Math.ceil(polls.length/2));for(const k in sum)if(cnt[k]>=need)r[k]=Math.round(sum[k]/cnt[k]*10)/10;return Object.keys(r).length?r:null}
+function lead(res,cands){const e=Object.entries(res||{}).filter(([k,v])=>isFinite(+v)&&partyIn(cands,k)!=="X").map(([k,v])=>[k,+v]).sort((a,b)=>b[1]-a[1]);if(e.length<2)return null;
+  const by=Math.round((e[0][1]-e[1][1])*10)/10;return {party:by===0?"T":pcls(partyIn(cands,e[0][0])),name:e[0][0],by}}
+function combined(avgs){const sum={},cnt={};for(const a of avgs)for(const k in a.r){const v=+a.r[k];if(isFinite(v)){sum[k]=(sum[k]||0)+v;cnt[k]=(cnt[k]||0)+1}}
+  const r={};for(const k in sum)if(cnt[k]===avgs.length||cnt[k]>=Math.ceil(avgs.length/2))r[k]=Math.round(sum[k]/cnt[k]*10)/10;return r}
+function topline(e,cands){if(!e)return null;
+  if(e.avg&&e.avg.length){const r=e.avg.length>1?combined(e.avg):e.avg[0].r;
+    return {src:e.avg.length>1?`Combined: ${e.avg.length} published averages`:e.avg[0].s,date:e.avg.length>1?"":e.avg[0].d,res:r,lead:lead(r,cands)}}
+  if(e.polls&&e.polls.length){const r=ownAvg(e.polls);if(r)return {src:`Average of ${e.polls.length} listed poll${e.polls.length>1?"s":""}`,res:r,lead:lead(r,cands),own:true}}
+  return null}
+const mgText=l=>!l?"":l.party==="T"?"Tied":`${l.party==="O"?"Oth":l.party}+${l.by}`;
+function resHTML(res,cands){return Object.entries(res||{}).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<span><i class="dotc ${pcls(partyIn(cands,k))}"></i>${esc(k)} ${esc(v)}%</span>`).join("")}
+function pollRow(title,sub,res,cands,url){const l=lead(res,cands);
+  return `<div class="pr"><span><span class="src">${esc(title)}</span>${sub?` <span class="dt">· ${esc(sub)}</span>`:""}</span>${l?`<span class="lead ${l.party}">${mgText(l)}</span>`:"<span></span>"}<span class="res">${resHTML(res,cands)}</span>${url?`<a class="link" href="${esc(url)}" target="_blank" rel="noopener">Source ↗</a>`:""}</div>`}
+function pollBlock(e,cands,heading){
+  let h=`<div class="kv"><span class="sec">${heading||"Polls"}</span>`;
+  if(!e||(!(e.avg||[]).length&&!(e.polls||[]).length))return h+`<div class="sub">No public polls found for this race.</div>${e&&e.note?`<div class="sub">${esc(e.note)}</div>`:""}</div>`;
+  const own=e.polls&&e.polls.length?ownAvg(e.polls):null;
+  h+=`<div class="avgbox"><span class="sec">Aggregate</span><div class="ptab">`;
+  if((e.avg||[]).length>1)h+=pollRow(`Combined: the ${e.avg.length} published averages below, averaged`,"",combined(e.avg),cands,"");
+  for(const a of e.avg||[])h+=pollRow(a.s,a.d,a.r,cands,a.u);
+  if(own)h+=pollRow(`Simple average of the ${e.polls.length} poll${e.polls.length>1?"s":""} below`,"",own,cands,"");
+  h+=`</div></div>`;
+  if(e.polls&&e.polls.length)h+=`<div class="ptab">${e.polls.map(p=>pollRow(p.p,[p.d,p.n].filter(Boolean).join(" · "),p.r,cands,p.u)).join("")}</div>`;
+  if(e.note)h+=`<div class="sub">${esc(e.note)}</div>`;
+  return h+`</div>`;
+}
+function renderPolls(){
+  const box=$("polls"),v=curView();box.innerHTML="";
+  if(!S.layers.polls)return;
+  const p=document.createElement("div");p.className="panel";
+  if(v==="senate"){
+    const rows=Object.keys(SEN_UP).map(s=>({s,t:topline(POLLS.sen[s],SEN_INFO[s][2]),n:((POLLS.sen[s]||{}).polls||[]).length}));
+    const withP=rows.filter(r=>r.t&&r.t.lead).sort((a,b)=>a.t.lead.by-b.t.lead.by),without=rows.filter(r=>!(r.t&&r.t.lead));
+    p.innerHTML=`<div><h3>Polling averages</h3><div class="sub">Closest first. Each row averages the published polling averages (270toWin, FiftyPlusOne, RealClearPolling, Decision Desk HQ, Silver Bulletin) where they exist; otherwise it averages the polls listed for that race. Tap a row for every poll.</div></div><div class="list"></div>`
+      +(without.length?`<div class="sub">No public polls found: ${without.map(r=>NAMES[r.s]).sort().join(", ")}.</div>`:"");
+    const list=p.querySelector(".list");
+    for(const r of withP){const b=document.createElement("button");b.className="row"+(sel===r.s?" sel":"");
+      b.innerHTML=`<span class="ab">${r.s}</span><span class="names">${resHTML(r.t.res,SEN_INFO[r.s][2])}<span class="meta">${esc(r.t.src)}${r.t.date?` · ${esc(r.t.date)}`:""}${r.n?` · ${r.n} poll${r.n>1?"s":""} listed`:""}</span></span><span class="lead ${r.t.lead.party}">${mgText(r.t.lead)}</span>`;
+      b.onclick=()=>{sel=r.s;render();$("detail").scrollIntoView({behavior:"smooth",block:"start"})};list.appendChild(b)}
+  }else if(v==="house"){
+    p.innerHTML=`<h3>Generic congressional ballot</h3><div class="sub">National polls asking which party's House candidate people plan to vote for. There's no reliable polling for most single districts.</div>`+pollBlock(POLLS.generic,GENERIC_C,"National polls");
+  }else if(LOCAL[v].gov){
+    p.innerHTML=`<h3>Governor polls</h3><div class="sub">Statewide polls. County-level polling isn't published.</div>`+pollBlock(POLLS.gov,LOCAL.lg.cands,"Statewide");
+  }else{
+    const L=LOCAL[v],hits=L.races.filter(r=>POLLS.local[v+":"+r[0]]);
+    p.innerHTML=`<h3>Polls</h3>`+(hits.length?`<div class="sub">Races with public polls. Tap a district for the details.</div><div class="list"></div>`:`<div class="sub">No public polls found for these ${L.races.length} races. Local legislative races are rarely polled in public.</div>`);
+    const list=p.querySelector(".list");
+    if(list)for(const r of hits){const t=topline(POLLS.local[v+":"+r[0]],r[5]);const b=document.createElement("button");b.className="row";
+      b.innerHTML=`<span class="ab">${esc(L.prefix+r[0])}</span><span class="names">${t?resHTML(t.res,r[5]):""}<span class="meta">${t?esc(t.src):""}</span></span><span class="lead ${t&&t.lead?t.lead.party:"T"}">${t&&t.lead?mgText(t.lead):"—"}</span>`;
+      b.onclick=()=>{sel=r[0];render();$("detail").scrollIntoView({behavior:"smooth",block:"start"})};list.appendChild(b)}
+  }
+  box.appendChild(p);
+}
+
+/* ===================== TALLIES ===================== */
+function tallyFor(p,view){
+  if(view==="senate"){let d=HOLD.D,r=HOLD.R,i=0,t=0;for(const s in SEN_UP){const v=p.sen[s]||"T";if(v==="D")d++;else if(v==="R")r++;else if(v==="I")i++;else t++}return {d,r,i,t,total:100}}
+  if(view==="house"){let d=0,r=0,i=0;for(const s in p.house){d+=p.house[s].D;r+=p.house[s].R;i+=p.house[s].I}return {d,r,i,t:435-d-r-i,total:435}}
+  const L=LOCAL[view];let d=0,r=0,i=0,t=0;for(const x of L.races){const v=p[view][x[0]]||"T";if(v==="D")d++;else if(v==="R")r++;else if(v==="I")i++;else t++}return {d,r,i,t,total:L.races.length};
+}
+const curView=()=>S.scope==="nat"?S.nat:S.loc;
+
+/* ===================== RENDER ===================== */
+function render(){
+  renderWho();
+  $("scope-nat").setAttribute("aria-selected",S.scope==="nat");$("scope-loc").setAttribute("aria-selected",S.scope==="loc");
+  const tabs=S.scope==="nat"?[["senate","Senate"],["house","House"]]:Object.keys(LOCAL).map(k=>[k,LOCAL[k].tab]);
+  $("tabs").innerHTML=tabs.map(([k,l])=>`<button class="tab" role="tab" data-v="${k}" aria-selected="${curView()===k}">${l}</button>`).join("");
+  $("tabs").querySelectorAll(".tab").forEach(b=>b.onclick=()=>{if(S.scope==="nat")S.nat=b.dataset.v;else S.loc=b.dataset.v;sel=null;save();render()});
+  $("layer-held").setAttribute("aria-pressed",S.layers.held);$("layer-ballot").setAttribute("aria-pressed",S.layers.ballot);$("layer-polls").setAttribute("aria-pressed",S.layers.polls);
+  renderTally();
+  if(S.scope==="nat")renderNatMap();else renderLocMap();
+  renderLegend();renderDetail();renderActions();renderExtra();renderPolls();renderBallot();renderCompare();renderShare();
+  $("note").textContent=noteText();
+}
+function renderWho(){
+  const s=$("who-select");
+  s.innerHTML=S.profiles.map((_,i)=>`<option value="${i}" ${i===S.active?"selected":""}>${esc(slotLabel(i))}</option>`).join("");
+  const n=$("who-name");n.value=S.profiles[S.active].name||"";n.placeholder=S.active?`Name for Player ${S.active}`:"Your name";
+  n.disabled=!editable();
+  $("who-lock").textContent=!editable()?"Main is the owner's map and updates live. Pick a slot to make your own.":
+    (live.on&&live.owner&&S.active===0?"Your Main map saves to the live board for everyone with the link.":"");
+  $("who-lock").hidden=!$("who-lock").textContent;
+}
+function renderTally(){
+  const v=curView(),x=tallyFor(P(),v),L=LOCAL[v];
+  $("n-d").textContent=x.d;$("n-r").textContent=x.r;$("n-t").textContent=x.t+(x.i?` · ${x.i} I`:"");
+  $("t-lbl").textContent=x.i?(L&&L.gov?"Toss-up":"Toss-up · Ind."):"Toss-up";
+  $("l-d").textContent=L&&L.dLabel||"Democrats";$("l-r").textContent=L&&L.rLabel||"Republicans";
+  const segs=v==="senate"
+    ?[["seg-d seg-hold",HOLD.D],["seg-d",x.d-HOLD.D],["seg-i",x.i],["seg-t",x.t],["seg-r",x.r-HOLD.R],["seg-r seg-hold",HOLD.R]]
+    :[["seg-d",x.d],["seg-i",x.i],["seg-t",x.t],["seg-r",x.r]];
+  $("bar").innerHTML=segs.filter(s=>s[1]>0).map(([c,n])=>`<span class="${c}" style="width:${n/x.total*100}%"></span>`).join("");
+  $("marker").hidden=S.scope!=="nat";
+  let st;
+  if(v==="senate"){
+    if(x.d>=51)st="<b>Democrats win control</b> with "+x.d+" seats";
+    else if(x.r>=50)st="<b>Republicans keep control</b>"+(x.r===50?" at 50, with the VP tiebreak":" with "+x.r+" seats");
+    else st=`Democrats need ${51-x.d} more · Republicans need ${Math.max(0,50-x.r)} more (VP breaks a 50–50 tie)`;
+    if(x.i&&x.d<51&&x.r<50)st+=` · ${x.i} independent pick${x.i>1?"s":""} could decide it`;
+  }else if(v==="house"){
+    if(x.d>=218)st="<b>Democrats win the House</b> with "+x.d+" seats";
+    else if(x.r>=218)st="<b>Republicans win the House</b> with "+x.r+" seats";
+    else st=`218 for control · Democrats need ${218-x.d} · Republicans need ${218-x.r}`;
+  }else if(L.gov)st=x.t===x.total?"Tap a county to pick who carries it":`<b>Hochul ${x.d}</b> · <b>Blakeman ${x.r}</b> of 6 counties`;
+  else{const hd=L.races.filter(r=>r[2]==="D").length,hr=L.races.filter(r=>r[2]==="R").length;st=`${x.total} seats on this map · held now: ${hd} D, ${hr} R`}
+  $("status").innerHTML=st;
+}
+
+function renderNatMap(){
+  const box=$("mapbox");box.innerHTML="";const grid=document.createElement("div");grid.className="map";grid.setAttribute("aria-label","State map");
+  const isS=S.nat==="senate",p=P();
+  for(const [ab,r,c] of TILES){
+    const el=document.createElement("button");el.className="tile";el.style.gridRow=r+1;el.style.gridColumn=c+1;el.textContent=ab;
+    if(isS){
+      if(!SEN_UP[ab]){el.classList.add("none");el.setAttribute("aria-label",`${NAMES[ab]}: no Senate race`);el.onclick=()=>toast(ab==="DC"?"DC has no Senate seats":`No Senate race in ${NAMES[ab]} this year`);grid.appendChild(el);continue}
+      const v=p.sen[ab]||"T";if(v!=="T")el.classList.add(v);
+      if(S.layers.held)el.insertAdjacentHTML("beforeend",`<span class="pip ${SEN_UP[ab]}"></span>`);
+      const tl=S.layers.polls?topline(POLLS.sen[ab],SEN_INFO[ab][2]):null;
+      if(tl&&tl.lead)el.insertAdjacentHTML("beforeend",`<span class="mg">${mgText(tl.lead)}</span>`);
+      else if(S.layers.ballot&&SPECIAL.has(ab))el.insertAdjacentHTML("beforeend",`<span class="star">special</span>`);
+      el.setAttribute("aria-label",`${NAMES[ab]}: ${PLONG[v]}. Seat held by ${SEN_UP[ab]==="D"?"Democrats":"Republicans"}. Tap to change.`);
+      el.onclick=()=>{sel=ab;if(guard()){const nx=cyc(p.sen[ab],true);if(nx==="T")delete p.sen[ab];else p.sen[ab]=nx;save()}render()};
+    }else{
+      if(!SEATS[ab]){el.classList.add("none");el.setAttribute("aria-label","DC: non-voting delegate");el.onclick=()=>toast("DC has a non-voting delegate");grid.appendChild(el);continue}
+      const n=SEATS[ab],h=hGet(ab),t=n-hTot(ab);
+      if(h.D===n)el.classList.add("D");else if(h.R===n)el.classList.add("R");else if(h.I===n)el.classList.add("I");
+      else if(t<n){const a=h.D/n*100,b=a+h.I/n*100,c2=b+t/n*100;
+        el.style.background=`linear-gradient(90deg,var(--dem) 0 ${a}%,var(--ind) ${a}% ${b}%,var(--toss) ${b}% ${c2}%,var(--rep) ${c2}% 100%)`;el.classList.add("mixed")}
+      if(S.layers.ballot&&n>1)el.insertAdjacentHTML("beforeend",`<span class="cnt">${n}</span>`);
+      const now=HOUSE_NOW[ab];
+      if(S.layers.held&&now){const tot=now.D+now.R+(now.I||0)+(now.V||0);
+        el.insertAdjacentHTML("beforeend",`<span class="strip"><span class="d" style="width:${now.D/tot*100}%"></span><span class="i" style="width:${(now.I||0)/tot*100}%"></span><span class="v" style="width:${(now.V||0)/tot*100}%"></span><span class="r" style="width:${now.R/tot*100}%"></span></span>`)}
+      el.setAttribute("aria-label",`${NAMES[ab]}: ${n} seat${n>1?"s":""}. Your call ${h.D} D, ${h.R} R, ${h.I} I, ${t} toss-up. ${n>1?"Tap to open.":"Tap to change."}`);
+      el.onclick=()=>{sel=ab;if(n===1&&guard()){const cur=h.D?"D":h.R?"R":h.I?"I":"T";const nx=cyc(cur,true);hSet(ab,{D:+(nx==="D"),R:+(nx==="R"),I:+(nx==="I")});save()}render()};
+    }
+    if(sel===ab)el.classList.add("sel");
+    grid.appendChild(el);
+  }
+  box.appendChild(grid);
+}
+
+function renderLocMap(){
+  const v=S.loc,L=LOCAL[v],p=P()[v],box=$("mapbox");box.innerHTML="";
+  const wide=S.layers.ballot&&!L.gov;
+  const wrap=document.createElement("div");wrap.className="regions"+(L.solo?" solo":wide?" wide":"");
+  for(const key of Object.keys(REGIONS)){
+    const races=L.races.filter(x=>x[1]===key);if(!races.length)continue;
+    const reg=document.createElement("div");reg.className="region";reg.style.gridArea=key;
+    reg.innerHTML=`<div><h2>${REGIONS[key][0]}</h2><div class="cty">${REGIONS[key][1]}</div></div>`;
+    const tiles=document.createElement("div");tiles.className="ltiles";
+    if(L.solo&&wide)tiles.style.gridTemplateColumns="repeat(auto-fill,minmax(150px,1fr))";
+    for(const r of races){
+      const [id,,held,tag,,cands]=r,cur=p[id]||"T";
+      const b=document.createElement("button");b.className="lt"+(cur!=="T"?" "+cur:"")+(sel===id?" sel":"");
+      if(L.solo&&wide){b.style.aspectRatio="auto";b.style.minHeight="62px";b.style.alignItems="flex-start";b.style.textAlign="left";b.style.padding="8px 10px"}
+      let inner;
+      if(L.gov)inner=`<span class="num" style="font-size:17px">${cur==="D"?"Hochul":cur==="R"?"Blakeman":cur==="I"?"Other":"Toss-up"}</span><span class="tag">${esc(id)}</span>`;
+      else{inner=`<span class="num">${wide&&L.prefix==="NY-"?"NY-":""}${id}</span>`;
+        if(wide){const main=cands.filter(c=>c[1]==="D"||c[1]==="R").map(c=>lastName(c[0]));
+          inner+=`<span class="who2">${esc(cands.length===1?lastName(cands[0][0])+" · unopposed":(main.length?main:cands.map(c=>lastName(c[0]))).slice(0,2).join(" v. "))}</span>`}
+        if(tag)inner+=`<span class="tag">${tag}</span>`}
+      if(S.layers.polls&&!L.gov){const tl=topline(POLLS.local[v+":"+id],cands);if(tl&&tl.lead)inner+=`<span class="mg">${mgText(tl.lead)}</span>`}
+      if(S.layers.held&&held)inner+=`<span class="pip ${held}"></span>`;
+      b.innerHTML=inner;
+      b.setAttribute("aria-label",`${L.gov?REGIONS[key][0]:L.prefix+id}: ${L.gov?(cur==="D"?"Hochul":cur==="R"?"Blakeman":"toss-up"):PLONG[cur]}${held?`. Held by ${held==="D"?"Democrats":"Republicans"}`:""}${tag?`, ${tag}`:""}. Tap to change.`);
+      b.onclick=()=>{sel=id;if(guard()){const nx=cyc(p[id],false);if(nx==="T")delete p[id];else p[id]=nx;save()}render()};
+      tiles.appendChild(b);
+    }
+    reg.appendChild(tiles);
+    if(L.notes[key]){const f=document.createElement("div");f.className="fn";f.textContent=L.notes[key];reg.appendChild(f)}
+    wrap.appendChild(reg);
+  }
+  box.appendChild(wrap);
+}
+
+function renderLegend(){
+  const v=curView(),L=LOCAL[v];
+  const items=L&&L.gov?[["--dem","Hochul (D)"],["--rep","Blakeman (R)"],["--toss","Toss-up"]]:[["--dem","Democrat"],["--rep","Republican"],["--ind","Independent / other"],["--toss","Toss-up"]];
+  if(v==="senate")items.push(["--empty","No race"]);
+  let extra="";
+  if(S.layers.held&&!(L&&L.gov))extra+=v==="house"?`<span>Bottom strip = today's delegation</span>`:`<span>Dot = party holding the seat now</span>`;
+  if(S.layers.ballot&&v==="house")extra+=`<span>Corner number = seats up</span>`;
+  if(S.layers.polls&&v==="senate")extra+=`<span>D+3 on a tile = polling lead</span>`;
+  const how=v==="senate"?"Tap cycles D → R → I → toss-up":v==="house"?"Tap a state to set its seats":"Tap cycles D → R → toss-up; set Ind. in the detail panel";
+  $("legend").innerHTML=items.map(([c,l])=>`<span><i style="background:var(${c})"></i>${l}</span>`).join("")+extra+`<span>${how}</span>`;
+}
+
+function renderDetail(){
+  const box=$("detail"),v=curView();box.innerHTML="";
+  const p=document.createElement("div");p.className="panel";
+  const empty=(t,s)=>{p.innerHTML=`<h3>${t}</h3><div class="sub">${s}</div>`;box.appendChild(p)};
+  if(v==="senate"){
+    if(!sel||!SEN_UP[sel])return empty("Race detail","Tap a state to see who's running and set your pick.");
+    const [inc,status,cands,note]=SEN_INFO[sel];const cur=P().sen[sel]||"T";
+    let h=`<div><h2>${NAMES[sel]}</h2><div class="sub">1 Senate seat on the ballot${SPECIAL.has(sel)?" · special election":""}</div></div>`;
+    if(S.layers.held)h+=`<div class="kv"><span class="sec">Seat held by</span><div class="cand"><span class="badge ${SEN_UP[sel]}">${SEN_UP[sel]}</span><span>${esc(inc)}${status==="open"?" · not on the ballot":""}</span></div></div>`;
+    if(S.layers.ballot)h+=`<div class="kv"><span class="sec">On the ballot</span>${candList(cands)}${note?`<div class="sub">${esc(note)}</div>`:""}<a class="link" href="${senUrl(sel)}" target="_blank" rel="noopener">More on this race ↗</a></div>`;
+    if(S.layers.polls)h+=pollBlock(POLLS.sen[sel],cands);
+    h+=`<div class="kv"><span class="sec">Your call</span>${segHTML(cur)}</div>`;
+    p.innerHTML=h;box.appendChild(p);
+    p.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{if(!guard())return;const x=b.dataset.p;if(x==="T")delete P().sen[sel];else P().sen[sel]=x;save();render()});
+    return;
+  }
+  if(v==="house"){
+    if(!sel||!SEATS[sel])return empty("State detail","Tap a state to see how many seats are up and set your split, like 2 D, 1 R, 1 I.");
+    const n=SEATS[sel],hh=hGet(sel),t=n-hTot(sel),now=HOUSE_NOW[sel];
+    let h=`<div><h2>${NAMES[sel]}</h2><div class="sub">${n} House seat${n>1?"s":""} on the ballot · your call ${hh.D} D · ${hh.R} R · ${hh.I} I · ${t} toss-up</div></div>`;
+    if(S.layers.held&&now){const tot=now.D+now.R+(now.I||0)+(now.V||0);
+      h+=`<div class="kv"><span class="sec">Held now</span><div class="hbar"><span style="width:${now.D/tot*100}%;background:var(--dem)"></span><span style="width:${(now.I||0)/tot*100}%;background:var(--ind)"></span><span style="width:${(now.V||0)/tot*100}%;background:var(--oth)"></span><span style="width:${now.R/tot*100}%;background:var(--rep)"></span></div>
+      <div class="sub">${now.D} D · ${now.R} R${now.I?` · ${now.I} I`:""}${now.V?` · ${now.V} vacant`:""}</div></div>`}
+    h+=`<div class="kv"><span class="sec">Your call</span><div class="steps">${["D","R","I"].map(k=>`<div class="step ${k}"><span class="lbl">${k==="I"?"Ind.":PLONG[k]}</span><span class="v">${hh[k]}</span>
+      <div class="pm"><button data-p="${k}" data-d="-1" aria-label="One fewer ${PLONG[k]}" ${hh[k]?"":"disabled"}>−</button><button data-p="${k}" data-d="1" aria-label="One more ${PLONG[k]}" ${t?"":"disabled"}>+</button></div></div>`).join("")}</div>
+      <div class="quick"><button class="btn" data-all="D">All D</button><button class="btn" data-all="R">All R</button>${now?`<button class="btn" data-all="now">Match today</button>`:""}<button class="btn" data-all="T">Reset</button></div></div>`;
+    if(S.layers.ballot)h+=`<a class="link" href="${houseUrl(sel)}" target="_blank" rel="noopener">Every ${NAMES[sel]} district and candidate ↗</a>`;
+    p.innerHTML=h;box.appendChild(p);
+    p.querySelectorAll(".pm button").forEach(b=>b.onclick=()=>{if(!guard())return;const k=b.dataset.p,d=+b.dataset.d,o={...hGet(sel)};
+      if(d>0&&hTot(sel)>=n)return;o[k]=Math.max(0,o[k]+d);hSet(sel,o);save();render()});
+    p.querySelectorAll("[data-all]").forEach(b=>b.onclick=()=>{if(!guard())return;const a=b.dataset.all;
+      if(a==="now")hSet(sel,{D:now.D,R:now.R,I:now.I||0});else hSet(sel,{D:a==="D"?n:0,R:a==="R"?n:0,I:0});save();render()});
+    return;
+  }
+  const L=LOCAL[v],r=L.races.find(x=>x[0]===sel);
+  if(!r)return empty("Race detail",L.gov?"Tap a county to pick who carries it.":"Tap a district to see who's running and set your pick.");
+  const cur=P()[v][r[0]]||"T";
+  let h;
+  if(L.gov){
+    h=`<div><h2>${REGIONS[r[1]][0]}</h2><div class="sub">Governor · ${REGIONS[r[1]][1]}</div></div>`;
+    if(S.layers.ballot)h+=`<div class="kv"><span class="sec">On the ballot</span>${candList(L.cands)}<a class="link" href="${L.url}" target="_blank" rel="noopener">More on this race ↗</a></div>`;
+    if(S.layers.polls)h+=`<div class="sub">Polls are statewide; see the Governor polls panel below.</div>`;
+    h+=`<div class="kv"><span class="sec">Your call</span><div class="seg" style="grid-template-columns:repeat(3,1fr)">${["D","R","T"].map(x=>`<button class="${x}" data-p="${x}" aria-pressed="${cur===x}">${x==="D"?"Hochul":x==="R"?"Blakeman":"Toss-up"}</button>`).join("")}</div></div>`;
+  }else{
+    const [id,reg,held,tag,inc,cands,url,note]=r;
+    h=`<div><h2>${L.prefix}${id}</h2><div class="sub">${L.title} · ${REGIONS[reg][0]}${tag?` · ${tag}`:""}</div></div>`;
+    if(S.layers.held)h+=`<div class="kv"><span class="sec">Seat held by</span><div class="cand"><span class="badge ${held}">${held}</span><span>${esc(inc)}</span></div></div>`;
+    if(S.layers.polls&&cands.length>1)h+=pollBlock(POLLS.local[v+":"+id],cands);
+    if(S.layers.ballot)h+=`<div class="kv"><span class="sec">On the ballot</span>${candList(cands)}${cands.length===1?`<div class="sub">Unopposed.</div>`:""}${note?`<div class="sub">${esc(note)}</div>`:""}<a class="link" href="${url}" target="_blank" rel="noopener">More on this race ↗</a></div>`;
+    h+=`<div class="kv"><span class="sec">Your call</span>${segHTML(cur)}</div>`;
+  }
+  p.innerHTML=h;box.appendChild(p);
+  p.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{if(!guard())return;const x=b.dataset.p;if(x==="T")delete P()[v][r[0]];else P()[v][r[0]]=x;save();render()});
+}
+
+function renderActions(){
+  const a=$("actions"),v=curView();a.innerHTML="";
+  const add=(label,fn)=>{const b=document.createElement("button");b.className="btn";b.textContent=label;b.onclick=fn;a.appendChild(b)};
+  if(v==="senate")add("Start from current seats",()=>{if(!guard())return;for(const s in SEN_UP)P().sen[s]=SEN_UP[s];save();render();toast("Filled with current holders")});
+  if(v==="senate"&&S.layers.polls)add("Fill from polling leaders",()=>{if(!guard())return;let n=0;for(const s in SEN_UP){const t=topline(POLLS.sen[s],SEN_INFO[s][2]);
+    if(t&&t.lead&&t.lead.party!=="T"&&t.lead.party!=="O"){if(t.lead.by<1)delete P().sen[s];else P().sen[s]=t.lead.party;n++}}save();render();toast(`Set ${n} races from polls; leads under 1 point stay toss-ups`)});
+  else if(v==="house")add("Start from today's delegations",()=>{if(!guard())return;for(const s in SEATS){const n=HOUSE_NOW[s];if(n)hSet(s,{D:n.D,R:n.R,I:n.I||0})}save();render();toast("Filled with today's delegations")});
+  else if(!LOCAL[v].gov)add("Start from current seats",()=>{if(!guard())return;for(const r of LOCAL[v].races)P()[v][r[0]]=r[2];save();render();toast("Filled with current holders")});
+  add("Clear this map",()=>{if(!guard())return;if(v==="senate")P().sen={};else if(v==="house")P().house={};else P()[v]={};save();render();toast("Cleared")});
+  add("Copy my picks as text",copySummary);
+}
+
+function renderExtra(){
+  const ex=$("extra"),v=curView();ex.innerHTML="";
+  if(v==="house"||LOCAL[v]&&LOCAL[v].gov)return;
+  const list=v==="senate"?Object.keys(SEN_UP).map(s=>[s,SEN_UP[s],P().sen[s]||"T",NAMES[s]]):LOCAL[v].races.map(r=>[r[0],r[2],P()[v][r[0]]||"T",LOCAL[v].prefix+r[0]]);
+  const flips=list.filter(x=>x[2]!=="T"&&x[2]!==x[1]),left=list.filter(x=>x[2]==="T").length;
+  ex.innerHTML=`<div class="panel"><div><h3>Seats changing hands</h3><div class="sub">${left} of ${list.length} still toss-ups</div></div>`
+    +(flips.length?`<div class="flips">${flips.map(x=>`<span class="flip ${x[2]}">${esc(x[3])} → ${x[2]}</span>`).join("")}</div>`
+      :`<div class="sub">No flips yet. Pick a winner that differs from the party holding the seat and it shows up here.</div>`)+`</div>`;
+}
+
+function renderBallot(){
+  const box=$("ballot"),v=curView();box.innerHTML="";
+  if(!S.layers.ballot||(LOCAL[v]&&(LOCAL[v].gov)))return;
+  const p=document.createElement("div");p.className="panel";
+  let rows=[];
+  if(v==="senate")rows=Object.keys(SEN_UP).sort((a,b)=>NAMES[a].localeCompare(NAMES[b])).map(s=>{const [inc,status,c,note]=SEN_INFO[s],pk=P().sen[s]||"T";
+    return {key:s,ab:s,names:c,meta:[S.layers.held?`Held by ${SEN_UP[s]} (${inc})${status==="open"?", open seat":""}`:"",SPECIAL.has(s)?"special election":""].filter(Boolean).join(" · "),pk:pk==="T"?["","Toss"]:[pk,pk]}});
+  else if(v==="house")rows=Object.keys(SEATS).sort((a,b)=>NAMES[a].localeCompare(NAMES[b])).map(s=>{const n=SEATS[s],h=hGet(s),now=HOUSE_NOW[s];
+    return {key:s,ab:s,text:`${n} seat${n>1?"s":""} up`,meta:S.layers.held&&now?`Held now: ${now.D} D · ${now.R} R${now.I?` · ${now.I} I`:""}${now.V?` · ${now.V} vacant`:""}`:"",pk:["",`${h.D}D ${h.R}R${h.I?` ${h.I}I`:""}`]}});
+  else{const L=LOCAL[v];rows=L.races.map(r=>{const pk=P()[v][r[0]]||"T";
+    return {key:r[0],ab:(L.prefix==="NY-"?"NY-":"")+r[0],names:r[5].map(c=>[c[0],c[1]]),meta:[S.layers.held?`Held by ${r[2]} (${r[4]})`:"",r[3],r[5].length===1?"unopposed":""].filter(Boolean).join(" · "),pk:pk==="T"?["","Toss"]:[pk,pk]}})}
+  p.innerHTML=`<div><h3>On the ballot</h3><div class="sub">${v==="senate"?"35 Senate races. Tap a row to open it.":v==="house"?"435 House seats by state. Tap a row to set that state's split.":`${rows.length} races. Tap a row to open it.`}</div></div><div class="list"></div>`;
+  const list=p.querySelector(".list");
+  for(const r of rows){const b=document.createElement("button");b.className="row"+(sel===r.key?" sel":"");
+    const names=r.names?r.names.map(([n,pp])=>`<span><i class="dotc ${pcls(pp)}"></i>${esc(n)}</span>`).join(""):`<span>${esc(r.text)}</span>`;
+    b.innerHTML=`<span class="ab">${esc(r.ab)}</span><span class="names">${names}${r.meta?`<span class="meta">${esc(r.meta)}</span>`:""}</span><span class="pk ${r.pk[0]}">${esc(r.pk[1])}</span>`;
+    b.onclick=()=>{sel=r.key;render();$("mapbox").scrollIntoView({behavior:"smooth",block:"start"})};
+    list.appendChild(b)}
+  box.appendChild(p);
+}
+
+function summaryOf(p){const s=tallyFor(p,"senate"),h=tallyFor(p,"house");return {s,h,any:Object.keys(p.sen).length+Object.keys(p.house).length+["lh","ls","la","lg"].reduce((a,k)=>a+Object.keys(p[k]).length,0)}}
+function renderCompare(){
+  const box=$("compare");box.innerHTML="";
+  const p=document.createElement("div");p.className="panel";
+  let rows=S.profiles.map((pr,i)=>({i,name:slotLabel(i),...summaryOf(pr.p)})).filter(r=>r.any||r.i===S.active||r.i===0);
+  let h=`<div><h3>Compare maps</h3><div class="sub">Main plus 10 player slots. Tap a name to switch to that map.</div></div>
+    <div class="cmp"><span class="h">Map</span><span class="h">Senate</span><span class="h">House</span>`;
+  for(const r of rows)h+=`<button data-i="${r.i}" class="nm${r.i===S.active?" act":""}">${esc(r.name)}</button><span>${r.s.d}–${r.s.r}${r.s.i?`–${r.s.i}`:""}</span><span>${r.h.d}–${r.h.r}${r.h.i?`–${r.h.i}`:""}</span>`;
+  h+=`</div>`;
+  if(live.on){
+    h+=`<div class="kv"><span class="sec">Live board</span>`;
+    if(!live.board.length)h+=`<div class="sub">No one has posted yet. Friends who open this link can post a slot from the Share section below.</div>`;
+    else{h+=`<div class="cmp">`;for(const e of live.board){const s=tallyFor(e.p,"senate"),hh=tallyFor(e.p,"house");
+      h+=`<button data-live="${esc(e.id)}" class="nm" title="Copy into a slot">${esc(e.name)}${e.id===live.uid?" (you)":""}</button><span>${s.d}–${s.r}${s.i?`–${s.i}`:""}</span><span>${hh.d}–${hh.r}${hh.i?`–${hh.i}`:""}</span>`}
+      h+=`</div><div class="sub">Tap a name to copy that map into your next empty slot.</div>`}
+    h+=`</div>`;
+  }
+  p.innerHTML=h;box.appendChild(p);
+  p.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{S.active=+b.dataset.i;sel=null;save();render()});
+  p.querySelectorAll("[data-live]").forEach(b=>b.onclick=()=>{const e=live.board.find(x=>x.id===b.dataset.live);if(!e)return;
+    const slot=nextEmpty();if(slot<0)return toast("All 10 slots are in use. Clear one first.");
+    S.profiles[slot]={name:e.name,p:cleanPicks(e.p)};S.active=slot;save();render();toast(`Loaded into slot ${slot}`)});
+}
+function nextEmpty(){for(let i=1;i<NSLOTS;i++)if(!summaryOf(S.profiles[i].p).any)return i;return -1}
+
+/* share codes */
+function b64e(str){return btoa(unescape(encodeURIComponent(str))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function b64d(str){str=str.replace(/-/g,"+").replace(/_/g,"/");while(str.length%4)str+="=";return decodeURIComponent(escape(atob(str)))}
+function makeCode(i){const pr=S.profiles[i];return "MM26-"+b64e(JSON.stringify({n:pr.name||(i?`Player ${i}`:"Main"),p:pr.p}))}
+function readCode(c){c=(c||"").trim();const m=c.match(/MM26-([A-Za-z0-9_-]+)/);if(!m)throw 0;const o=JSON.parse(b64d(m[1]));return {name:String(o.n||"").slice(0,24),p:cleanPicks(o.p)}}
+function renderShare(){
+  const box=$("share");box.innerHTML="";
+  const p=document.createElement("div");p.className="panel";
+  let h=`<div><h3>Share</h3><div class="sub">Copy a code for the map you're on and text it to someone. When they paste it here, it loads into a slot so you can compare.</div></div>
+    <div class="actions"><button class="btn primary" id="sh-copy">Copy code for ${esc(slotLabel(S.active))}</button></div>
+    <div class="kv"><label class="sec" for="sh-in">Paste a code</label><textarea class="code" id="sh-in" placeholder="MM26-…"></textarea>
+    <div class="actions"><button class="btn" id="sh-load">Load into next empty slot</button>${S.active?`<button class="btn" id="sh-load-here">Replace ${esc(slotLabel(S.active))}</button>`:""}</div></div>`;
+  if(live.on&&!live.owner){
+    h+=`<div class="kv"><span class="sec">Live board</span>`;
+    if(!live.uid)h+=`<div class="sub">Sign in to Claude to post your map.</div>`;
+    else if(S.active===0)h+=`<div class="sub">Switch to one of your slots to post it.</div>`;
+    else h+=`<div class="actions"><button class="btn" id="sh-post">${live.postedSlot===S.active?"Posted · updates as you edit":"Post "+esc(slotLabel(S.active))+" to the live board"}</button></div>`;
+    if(live.status)h+=`<div class="sub">${esc(live.status)}</div>`;
+    h+=`</div>`;
+  }
+  p.innerHTML=h;box.appendChild(p);
+  $("sh-copy").onclick=()=>copyText(makeCode(S.active),"Code copied");
+  const load=into=>{try{const r=readCode($("sh-in").value);const slot=into??nextEmpty();if(slot<0)return toast("All 10 slots are in use. Clear one first.");
+      S.profiles[slot]=r;S.active=slot;$("sh-in").value="";save();render();toast(`Loaded ${r.name||"map"} into ${slotLabel(slot)}`)}
+    catch(e){toast("That code didn't read. Check that the whole code was pasted.")}};
+  $("sh-load").onclick=()=>load(null);
+  if($("sh-load-here"))$("sh-load-here").onclick=()=>load(S.active);
+  if($("sh-post"))$("sh-post").onclick=()=>{live.postedSlot=S.active;try{localStorage.setItem(KEY+"-posted",JSON.stringify(S.active))}catch(e){}pushNow();renderShare();toast("Posted to the live board")};
+}
+
+function copyText(txt,msg){try{navigator.clipboard.writeText(txt).then(()=>toast(msg),()=>fallback(txt,msg))}catch(e){fallback(txt,msg)}}
+function fallback(txt,msg){const ta=document.createElement("textarea");ta.value=txt;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();
+  let ok=false;try{ok=document.execCommand("copy")}catch(e){}ta.remove();toast(ok?msg:"Copy is blocked in this view")}
+function copySummary(){
+  const p=P(),s=tallyFor(p,"senate"),h=tallyFor(p,"house");
+  const fl=Object.keys(SEN_UP).filter(k=>p.sen[k]&&p.sen[k]!==SEN_UP[k]).map(k=>`${k}→${p.sen[k]}`);
+  const lines=[`${slotLabel(S.active)}'s 2026 midterm map`,`Senate: D ${s.d} – R ${s.r}${s.i?` – I ${s.i}`:""}${s.t?` (${s.t} toss-up)`:""}${fl.length?` · flips: ${fl.join(", ")}`:""}`,`House: D ${h.d} – R ${h.r}${h.i?` – I ${h.i}`:""}${h.t?` (${h.t} toss-up)`:""}`];
+  for(const v of ["lh","ls","la","lg"]){const x=tallyFor(p,v),L=LOCAL[v];if(x.t===x.total)continue;
+    lines.push(L.gov?`NY governor counties: Hochul ${x.d} – Blakeman ${x.r}`:`${L.title}: D ${x.d} – R ${x.r}${x.i?` – I ${x.i}`:""}${x.t?` (${x.t} toss-up)`:""}`)}
+  copyText(lines.join("\n"),"Copied to clipboard");
+}
+function noteText(){
+  const v=curView();
+  if(v==="senate")return "35 seats are up: all 33 Class II seats plus special elections in Ohio and Florida. Striped bar sections are the 65 seats not on the ballot (34 Democratic, including two independents, and 31 Republican). Candidate lists as of Nov. 2; write-ins left out.";
+  if(v==="house")return "Several states redrew their maps for 2026, so district numbers don't line up with today's members. Set each state's split by seat count. Today's delegations come from Sept. 2 member rosters; TX-23 and FL-20 are vacant.";
+  return LOCAL[v].footer;
+}
+
+$("scope-nat").onclick=()=>{S.scope="nat";sel=null;save();render()};
+$("scope-loc").onclick=()=>{S.scope="loc";sel=null;save();render()};
+$("layer-held").onclick=()=>{S.layers.held=!S.layers.held;save();render()};
+$("layer-ballot").onclick=()=>{S.layers.ballot=!S.layers.ballot;save();render()};
+$("layer-polls").onclick=()=>{S.layers.polls=!S.layers.polls;save();render()};
+$("who-select").onchange=e=>{S.active=+e.target.value;sel=null;save();render()};
+let nameT;$("who-name").oninput=e=>{if(!editable())return;S.profiles[S.active].name=e.target.value.slice(0,24);clearTimeout(nameT);nameT=setTimeout(()=>{save();renderWho();renderCompare();renderShare()},400)};
+render();
+</script>
+
+</body>
+</html>
